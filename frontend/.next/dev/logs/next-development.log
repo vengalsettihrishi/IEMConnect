@@ -1,14 +1,140 @@
-[00:00:01.348] Server  WARN     ⚠ "Found lockfile missing swc dependencies," "patching..."
-[00:00:13.353] Server  ERROR    ⨯ Failed to patch lockfile, please try uninstalling and reinstalling next in this workspace
-[00:00:13.368] Server  ERROR   Error: Failed to get registry from "pnpm".
-[00:00:13.990] Server  LOG      ✓ Ready in 13.3s
-[00:02:51.233] Server  LOG      ○ Compiling /dashboard ...
-[00:02:53.275] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:47.164] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:53.855] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:55.919] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:05:50.251] Server  LOG      ✓ Compiled in 93ms
-[01:01:16.023] Browser ERROR   Failed to fetch notifications: {"code":"ERR_NETWORK","config":{"adapter":["xhr","http","fetch"],"allowAbsoluteUrls":true,"baseURL":"http://localhost:5000/api/v1","env":{},"headers":{"Accept":"application/json, text/plain, */*","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInJvbGUiOiJtZW1iZXIiLCJuYW1lIjoiam9obiBkb2UiLCJpYXQiOjE3NjM2NzQyNjIsImV4cCI6MTc2MzY3Nzg2Mn0.fMYnotW57Mt1xExv09tixDiiXOU4IfuFX1BllTqWYiA","Content-Type":"application/json"},"maxBodyLength":-1,"maxContentLength":-1,"method":"get","params":{"limit":20,"offset":0},"timeout":0,"transformRequest":[null],"transformResponse":[null],"transitional":{"clarifyTimeoutError":false,"forcedJSONParsing":true,"silentJSONParsing":true},"url":"/notifications","xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN"},"message":"Network Error","name":"AxiosError","stack":"AxiosError: Network Error\n    at XMLHttpRequest.handleError (http://localhost:3000/_next/static/chunks/node_modules_fbb4d8b2._.js:4267:25)\n    at Axios.request (http://localhost:3000/_next/static/chunks/node_modules_fbb4d8b2._.js:5025:49)\n    at async getNotifications (http://localhost:3000/_next/static/chunks/frontend_2a953936._.js:457:22)\n    at async Promise.all (index 0)\n    at async fetchNotifications (http://localhost:3000/_next/static/chunks/frontend_2a953936._.js:531:53)"}
-[01:02:17.307] Browser ERROR   Failed to fetch notifications: {"code":"ERR_BAD_REQUEST","config":{"adapter":["xhr","http","fetch"],"allowAbsoluteUrls":true,"baseURL":"http://localhost:5000/api/v1","env":{},"headers":{"Accept":"application/json, text/plain, */*","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInJvbGUiOiJtZW1iZXIiLCJuYW1lIjoiam9obiBkb2UiLCJpYXQiOjE3NjM2NzQyNjIsImV4cCI6MTc2MzY3Nzg2Mn0.fMYnotW57Mt1xExv09tixDiiXOU4IfuFX1BllTqWYiA","Content-Type":"application/json"},"maxBodyLength":-1,"maxContentLength":-1,"method":"get","params":{"limit":20,"offset":0},"timeout":0,"transformRequest":[null],"transformResponse":[null],"transitional":{"clarifyTimeoutError":false,"forcedJSONParsing":true,"silentJSONParsing":true},"url":"/notifications","xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN"},"message":"Request failed with status code 401","name":"AxiosError","stack":"AxiosError: Request failed with status code 401\n    at settle (http://localhost:3000/_next/static/chunks/node_modules_fbb4d8b2._.js:3706:16)\n    at XMLHttpRequest.onloadend (http://localhost:3000/_next/static/chunks/node_modules_fbb4d8b2._.js:4221:174)\n    at Axios.request (http://localhost:3000/_next/static/chunks/node_modules_fbb4d8b2._.js:5025:49)\n    at async getNotifications (http://localhost:3000/_next/static/chunks/frontend_2a953936._.js:457:22)\n    at async Promise.all (index 0)\n    at async fetchNotifications (http://localhost:3000/_next/static/chunks/frontend_2a953936._.js:531:53)","status":401}
-[01:02:17.771] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[01:02:17.794] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:01.282] Server  LOG      ✓ Ready in 876ms
+[00:00:08.684] Server  WARN     ⚠ Cross origin request detected from 10.211.105.72 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[00:00:08.715] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:53.980] Server  LOG      ✓ Compiled in 67ms
+[00:09:42.738] Server  LOG      ✓ Compiled in 64ms
+[00:14:37.631] Server  LOG      ✓ Compiled in 73ms
+[00:15:35.579] Server  LOG      ✓ Compiled in 63ms
+[00:15:44.576] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:52.049] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:19:30.724] Server  LOG      ✓ Compiled in 111ms
+[00:19:34.417] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:21:23.095] Server  LOG      ✓ Compiled in 59ms
+[00:22:28.392] Server  LOG      ✓ Compiled in 61ms
+[00:24:45.411] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:03.040] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:26:12.618] Server  LOG      ✓ Compiled in 80ms
+[00:26:12.726] Browser ERROR   ./frontend/app/page.tsx:223:2
+Parsing ecmascript source code failed
+  221 |     </div>
+  222 |   </div>
+> 223 | </footer>
+      |  ^^^^^^^^
+  224 |
+  225 |     </div>
+  226 |   );
+
+Unterminated regexp literal
+
+Import traces:
+  Client Component Browser:
+    ./frontend/app/page.tsx [Client Component Browser]
+    ./frontend/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/app/page.tsx [Client Component SSR]
+    ./frontend/app/page.tsx [Server Component]
+[00:26:13.232] Browser ERROR   ./frontend/app/page.tsx:223:2
+Parsing ecmascript source code failed
+  221 |     </div>
+  222 |   </div>
+> 223 | </footer>
+      |  ^^^^^^^^
+  224 |
+  225 |     </div>
+  226 |   );
+
+Unterminated regexp literal
+
+Import traces:
+  Client Component Browser:
+    ./frontend/app/page.tsx [Client Component Browser]
+    ./frontend/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/app/page.tsx [Client Component SSR]
+    ./frontend/app/page.tsx [Server Component]
+[00:26:53.378] Server  LOG      ✓ Compiled in 60ms
+[00:28:04.378] Server  LOG      ✓ Compiled in 59ms
+[00:35:15.015] Server  LOG      ✓ Compiled in 59ms
+[00:35:45.619] Server  LOG      ✓ Compiled in 58ms
+[00:48:38.894] Server  LOG      ✓ Compiled in 100ms
+[00:48:50.935] Server  LOG      ✓ Compiled in 60ms
+[00:49:14.954] Server  LOG      ✓ Compiled in 53ms
+[00:49:37.137] Server  LOG      ✓ Compiled in 52ms
+[00:51:11.581] Server  LOG      ✓ Compiled in 55ms
+[00:51:15.890] Server  LOG      ✓ Compiled in 63ms
+[00:53:13.598] Server  LOG      ✓ Compiled in 69ms
+[00:53:31.326] Server  LOG      ✓ Compiled in 55ms
+[00:54:18.483] Server  LOG      ✓ Compiled in 51ms
+[00:55:15.894] Server  LOG      ✓ Compiled in 55ms
+[00:56:19.274] Server  LOG      ✓ Compiled in 56ms
+[00:56:23.932] Server  LOG      ✓ Compiled in 52ms
+[00:56:34.939] Server  LOG      ✓ Compiled in 52ms
+[00:57:45.467] Server  LOG      ✓ Compiled in 52ms
+[00:58:12.876] Server  LOG      ✓ Compiled in 60ms
+[00:58:42.806] Server  LOG      ✓ Compiled in 55ms
+[01:00:04.840] Server  LOG      ✓ Compiled in 54ms
+[01:00:19.812] Server  LOG      ✓ Compiled in 53ms
+[01:00:55.454] Server  LOG      ✓ Compiled in 54ms
+[01:01:18.774] Server  LOG      ✓ Compiled in 64ms
+[01:01:26.476] Server  LOG      ✓ Compiled in 50ms
+[01:01:33.544] Server  LOG      ✓ Compiled in 53ms
+[01:01:40.876] Server  LOG      ✓ Compiled in 86ms
+[01:02:00.374] Server  LOG      ✓ Compiled in 52ms
+[01:02:29.455] Server  LOG      ✓ Compiled in 55ms
+[01:02:38.404] Server  LOG      ✓ Compiled in 54ms
+[01:03:08.931] Server  LOG      ✓ Compiled in 55ms
+[01:04:04.830] Server  LOG      ✓ Compiled in 100ms
+[01:04:13.315] Server  LOG      ✓ Compiled in 81ms
+[01:04:19.033] Server  LOG      ✓ Compiled in 55ms
+[01:05:02.711] Server  LOG      ✓ Compiled in 60ms
+[01:05:11.631] Server  LOG      ✓ Compiled in 55ms
+[01:05:20.333] Server  LOG      ✓ Compiled in 56ms
+[01:08:14.158] Server  LOG      ✓ Compiled in 92ms
+[01:08:47.339] Server  LOG      ✓ Compiled in 87ms
+[01:10:16.558] Server  LOG      ✓ Compiled in 50ms
+[01:22:34.144] Server  LOG      ✓ Compiled in 100ms
+[01:22:34.253] Browser ERROR   ./frontend/app/page.tsx:178:1
+Parsing ecmascript source code failed
+  176 |     </div>
+  177 |   );
+> 178 | }
+      | ^
+  179 |
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+
+Import traces:
+  Client Component Browser:
+    ./frontend/app/page.tsx [Client Component Browser]
+    ./frontend/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/app/page.tsx [Client Component SSR]
+    ./frontend/app/page.tsx [Server Component]
+[01:22:36.274] Browser ERROR   ./frontend/app/page.tsx:178:1
+Parsing ecmascript source code failed
+  176 |     </div>
+  177 |   );
+> 178 | }
+      | ^
+  179 |
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+
+Import traces:
+  Client Component Browser:
+    ./frontend/app/page.tsx [Client Component Browser]
+    ./frontend/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/app/page.tsx [Client Component SSR]
+    ./frontend/app/page.tsx [Server Component]
+[01:26:54.976] Server  LOG      ✓ Compiled in 65ms
+[01:27:59.411] Server  LOG      ✓ Compiled in 64ms
+[01:31:22.454] Server  LOG      ✓ Compiled in 58ms
+[01:33:31.246] Server  LOG      ✓ Compiled in 93ms
+[01:34:10.209] Server  LOG      ✓ Compiled in 60ms
+[01:34:45.812] Server  LOG      ✓ Compiled in 59ms

@@ -18,10 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} bg-background text-foreground`}
-        suppressHydrationWarning
-      >
+      <body className={`${inter.className} bg-background text-foreground min-h-screen`}>
+
+
         <AuthProvider>
           {children}
           <Toaster />
@@ -30,3 +29,4 @@ export default function RootLayout({
     </html>
   );
 }
+
