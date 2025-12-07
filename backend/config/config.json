@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "ariff383",
+    "database": "IEM_CONNECT",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "ariff383",
+    "database": "iem_connect_test",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "ariff383",
+    "database": "iem_connect_prod",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

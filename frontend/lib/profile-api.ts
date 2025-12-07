@@ -54,3 +54,11 @@ export const deleteAvatar = async () => {
   const response = await api.delete("/auth/profile/avatar");
   return response.data;
 };
+
+// Add this to your existing api file
+export const uploadBanner = async (file: File) => {
+  const formData = new FormData();
+  formData.append('banner', file);
+  const response = await api.post('/users/banner', formData); // Adjust endpoint as needed
+  return response.data;
+};

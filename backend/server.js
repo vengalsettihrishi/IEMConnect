@@ -13,6 +13,7 @@ import certificatesRoutes from "./routes/certificates.js";
 import chatbotRoutes from "./routes/chatbot.js";
 import { apiRateLimit } from "./middleware/rateLimiter.js";
 import eventReminderScheduler from "./utils/eventReminderScheduler.js";
+import userRoutes from "./routes/users.js";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use("/api/v1/attendance", attendanceRoutes);
 app.use("/api/v1/notifications", notificationsRoutes);
 app.use("/api/v1/certificates", certificatesRoutes);
 app.use("/api/v1/chatbot", chatbotRoutes);
+app.use("/api/v1/users", userRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
