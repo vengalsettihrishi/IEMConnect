@@ -108,13 +108,13 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative w-full py-20 md:py-32 lg:py-40 xl:py-56 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 via-indigo-600/70 to-blue-900/80 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 via-sky-500/70 to-blue-900/80 backdrop-blur-sm"></div>
           
           {/* Animated background elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
+            <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-sky-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
           </div>
           
           <div className="container px-4 md:px-6 relative z-10 max-w-full">
@@ -239,15 +239,43 @@ export default function Home() {
         </section>
 
         {/* About the Platform */}
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white/85 to-white/75 backdrop-blur-md">
-          <div className="container px-4 md:px-6 max-w-6xl mx-auto">
+        <section className="relative w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white/85 to-white/75 backdrop-blur-md overflow-hidden">
+          {/* Decorative background elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-10 right-20 w-64 h-64 bg-blue-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 left-10 w-80 h-80 bg-cyan-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+            <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-cyan-400 rounded-full animate-pulse delay-500"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-2 h-2 bg-blue-300 rounded-full animate-pulse delay-1000"></div>
+            <div className="absolute top-20 left-1/3 w-2 h-2 bg-cyan-300/60 rounded-full animate-pulse delay-300"></div>
+            <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-blue-400/50 rounded-full animate-pulse delay-700"></div>
+            <div className="absolute top-2/3 right-1/4 w-3 h-3 bg-cyan-400/40 rounded-full animate-pulse delay-1000"></div>
+            <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-blue-300/50 rounded-full animate-pulse delay-200"></div>
+          </div>
+          
+          <div className="container px-4 md:px-6 max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <div className="inline-block mb-4">
+                <span className="px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full text-blue-700 text-sm font-semibold shadow-md">
+                  ✨ Powerful Tools
+                </span>
+              </div>
+              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
                 Platform Features
               </h2>
               <p className="text-lg text-gray-700 max-w-2xl mx-auto">
                 Everything you need to manage your engineering journey
               </p>
+              <div className="flex items-center justify-center gap-8 mt-8 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-gray-600">3 Core Features</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse delay-300"></div>
+                  <span className="text-gray-600">100% Digital</span>
+                </div>
+              </div>
             </div>
             <div className="grid gap-8 lg:grid-cols-3">
               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white/95 backdrop-blur-sm">
@@ -280,7 +308,7 @@ export default function Home() {
               </Card>
               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white/95 backdrop-blur-sm">
                 <CardHeader className="space-y-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                     <Award className="w-7 h-7 text-white" />
                   </div>
                   <CardTitle className="text-2xl">Digital Certificates</CardTitle>
@@ -297,24 +325,58 @@ export default function Home() {
         </section>
 
         {/* About IEM UTM */}
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white/75 to-white/85 backdrop-blur-md">
-          <div className="container px-4 md:px-6 max-w-6xl mx-auto">
+        <section className="relative w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white/75 to-white/85 backdrop-blur-md overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-20 w-96 h-96 bg-gradient-to-br from-cyan-200/20 to-blue-200/20 rounded-full blur-3xl"></div>
+            {/* Decorative grid pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+            {/* Floating bubbles */}
+            <div className="absolute top-32 right-1/4 w-2 h-2 bg-blue-400/50 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-32 left-1/3 w-3 h-3 bg-cyan-400/40 rounded-full animate-pulse delay-700"></div>
+            <div className="absolute top-2/3 right-1/3 w-2 h-2 bg-blue-300/50 rounded-full animate-pulse delay-300"></div>
+            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse delay-500"></div>
+            <div className="absolute bottom-1/4 right-1/2 w-2 h-2 bg-blue-400/40 rounded-full animate-pulse delay-900"></div>
+            <div className="absolute top-1/2 right-1/4 w-3 h-3 bg-cyan-400/30 rounded-full animate-pulse delay-200"></div>
+          </div>
+          
+          <div className="container px-4 md:px-6 max-w-6xl mx-auto relative z-10">
             <div className="grid gap-12 lg:grid-cols-2 items-center">
               <div className="space-y-6">
-                <div className="inline-block px-4 py-2 bg-blue-100 rounded-full text-blue-700 text-sm font-semibold">
-                  Since 1959
+                <div className="flex items-center gap-3">
+                  <div className="inline-block px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full text-blue-700 text-sm font-semibold shadow-md">
+                    🏛️ Since 1959
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-cyan-50 rounded-full text-cyan-700 text-xs font-medium">
+                    <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></span>
+                    66 Years of Excellence
+                  </div>
                 </div>
-                <h2 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                <h2 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
                   About IEM UTM
                 </h2>
-                <p className="text-lg text-gray-700 leading-relaxed">
-                  The Institution of Engineers Malaysia (IEM) was established in 1959. 
-                  With over <span className="font-bold text-blue-600">30,000 members</span>, 
-                  it is the primary qualifying body for professional engineers in Malaysia.
-                </p>
-                <p className="text-gray-600 leading-relaxed">
-                  Join a legacy of excellence and innovation that has shaped Malaysia's engineering landscape for decades.
-                </p>
+                <div className="space-y-4">
+                  <p className="text-lg text-gray-700 leading-relaxed">
+                    The Institution of Engineers Malaysia (IEM) was established in 1959. 
+                    With over <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">30,000+ members</span>, 
+                    it is the primary qualifying body for professional engineers in Malaysia.
+                  </p>
+                  <p className="text-gray-600 leading-relaxed border-l-4 border-blue-400 pl-4">
+                    Join a legacy of excellence and innovation that has shaped Malaysia's engineering landscape for decades.
+                  </p>
+                </div>
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-md">
+                    <div className="text-3xl font-bold text-blue-600">30K+</div>
+                    <div className="text-sm text-gray-600">Active Members</div>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-cyan-50 to-white rounded-xl shadow-md">
+                    <div className="text-3xl font-bold text-cyan-600">#1</div>
+                    <div className="text-sm text-gray-600">Engineering Body</div>
+                  </div>
+                </div>
               </div>
               <div className="grid gap-6">
                 <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all duration-300">
@@ -351,15 +413,44 @@ export default function Home() {
         </section>
 
         {/* Why Join IEM Student Chapter */}
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white/85 to-white/75 backdrop-blur-md">
-          <div className="container px-4 md:px-6 max-w-6xl mx-auto">
+        <section className="relative w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white/85 to-white/75 backdrop-blur-md overflow-hidden">
+          {/* Decorative background */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 right-10 w-96 h-96 bg-gradient-to-br from-blue-200/25 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 left-10 w-96 h-96 bg-gradient-to-br from-cyan-200/25 to-transparent rounded-full blur-3xl"></div>
+            {/* Floating particles */}
+            <div className="absolute top-20 left-1/4 w-3 h-3 bg-blue-400/40 rounded-full animate-bounce"></div>
+            <div className="absolute top-40 right-1/3 w-2 h-2 bg-cyan-400/40 rounded-full animate-bounce delay-300"></div>
+            <div className="absolute bottom-40 left-1/3 w-2 h-2 bg-blue-300/40 rounded-full animate-bounce delay-700"></div>
+            {/* Additional subtle bubbles */}
+            <div className="absolute top-1/3 left-1/2 w-2 h-2 bg-blue-300/30 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-cyan-300/30 rounded-full animate-pulse delay-500"></div>
+            <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-blue-400/35 rounded-full animate-pulse delay-800"></div>
+            <div className="absolute bottom-1/2 right-1/3 w-3 h-3 bg-cyan-400/35 rounded-full animate-pulse delay-400"></div>
+            <div className="absolute top-2/3 right-1/2 w-2 h-2 bg-blue-300/40 rounded-full animate-pulse delay-600"></div>
+          </div>
+          
+          <div className="container px-4 md:px-6 max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <div className="inline-block mb-4">
+                <span className="px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full text-blue-700 text-sm font-semibold shadow-md">
+                  🚀 Join Today
+                </span>
+              </div>
+              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
                 Why Join IEM Student Chapter?
               </h2>
               <p className="text-lg text-gray-700 max-w-2xl mx-auto">
                 Unlock exclusive benefits and opportunities for your engineering career
               </p>
+              <div className="flex items-center justify-center gap-2 mt-6">
+                <div className="px-4 py-2 bg-blue-50 rounded-full text-blue-700 text-sm font-medium shadow-sm">
+                  6 Key Benefits
+                </div>
+                <div className="px-4 py-2 bg-cyan-50 rounded-full text-cyan-700 text-sm font-medium shadow-sm">
+                  Career Growth
+                </div>
+              </div>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[

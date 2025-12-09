@@ -15,129 +15,131 @@ export default function LoginPage() {
   }, [token, tempToken, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden p-4">
+      {/* Animated gradient background with mesh */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-sky-600 to-blue-900"></div>
+      
+      {/* Animated gradient mesh overlay */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(56,189,248,0.3),transparent_50%)] animate-pulse"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(96,165,250,0.4),transparent_40%)]" style={{animationDelay: '1s'}}></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(14,165,233,0.3),transparent_50%)]" style={{animationDelay: '2s'}}></div>
+      </div>
+
+      {/* Floating animated elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Large gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-blue-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-sky-300/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-indigo-300/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
         
-    <div
-      className="absolute inset-0"
-      style={{
-        backgroundImage: "url('/login-page-bg.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",     
-        transform: "scale(1.05)",  
-      }}
-    ></div>
+        {/* Floating particles */}
+        <div className="absolute top-10 left-1/4 w-3 h-3 bg-white/40 rounded-full animate-bounce" style={{animationDelay: '0.3s'}}></div>
+        <div className="absolute bottom-32 left-1/3 w-2 h-2 bg-cyan-200/50 rounded-full animate-bounce" style={{animationDelay: '0.7s'}}></div>
+        <div className="absolute top-2/3 right-1/3 w-2 h-2 bg-blue-200/40 rounded-full animate-bounce" style={{animationDelay: '1.2s'}}></div>
+        <div className="absolute top-1/3 left-2/3 w-2 h-2 bg-sky-300/50 rounded-full animate-bounce" style={{animationDelay: '0.9s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-3 h-3 bg-cyan-300/40 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
+        
+        {/* Decorative shapes */}
+        <div className="absolute top-20 right-20 w-32 h-32 border-2 border-white/10 rounded-full animate-spin" style={{animationDuration: '20s'}}></div>
+        <div className="absolute bottom-40 left-32 w-24 h-24 border-2 border-cyan-300/10 rounded-lg rotate-45 animate-pulse"></div>
+        <div className="absolute top-1/2 right-40 w-16 h-16 border border-sky-300/20 rounded-full" style={{animation: 'ping 3s cubic-bezier(0, 0, 0.2, 1) infinite'}}></div>
+        
+        {/* Floating icons */}
+        <div className="absolute top-32 left-20 opacity-20 animate-bounce" style={{animationDelay: '0.5s', animationDuration: '3s'}}>
+          <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <div className="absolute bottom-24 right-32 opacity-15 animate-bounce" style={{animationDelay: '1s', animationDuration: '4s'}}>
+          <svg className="w-16 h-16 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div className="absolute top-1/3 right-1/4 opacity-10 animate-pulse">
+          <svg className="w-20 h-20 text-sky-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        </div>
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:80px_80px]"></div>
+      </div>
 
-    <div className="absolute inset-0 bg-white/45"></div>
-
-
-      <div className="absolute top-20 left-20 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-indigo-300/15 rounded-full blur-3xl"></div>
-
-      <div className="relative z-10 w-full max-w-6xl px-8 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-
-        <div className="hidden lg:flex flex-col justify-center space-y-8">
-          
-          {/*LOGO*/}
-          <div className="flex items-center space-x-6 mb-10">
-            <div className="p-4 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/70">
-              <img
-                src="/iem-logo.jpg"
-                alt="IEM Logo"
-                className="w-24 h-24 object-contain drop-shadow-md"
-              />
-            </div>
-              
-            <div className="h-20 w-px bg-blue-300/70"></div>
-            
-            <div className="space-y-1">
-              <div className="text-lg font-semibold text-blue-700 tracking-wider">
-                INSTITUTION OF ENGINEERS, MALAYSIA
-              </div>
-              <div className="text-md font-semibold text-red-600">
-                UTM STUDENT SECTION
-              </div>
-            </div>
-          </div>
-
-
-          <div className="space-y-4">
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                IEM
-              </span>
-              <br />
-              <span className="text-gray-900">Connect</span>
-            </h1>
-            
-            <div className="flex items-center space-x-3">
-              <div className="w-70 h-px bg-gradient-to-r from-blue-600 to-transparent"></div>
-              
-            </div>
-          </div>
-
-          {/*Description*/}
-          <p className="text-lg text-gray-700 leading-relaxed max-w-lg">
-            Login to manage your membership, register for events, and access all essential IEM Connect services with secure authentication.
+      {/* Main split box */}
+      <div className="relative z-10 w-full max-w-5xl">
+        {/* Welcome message above the box */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-black text-white drop-shadow-2xl mb-3">
+            Welcome back!
+          </h1>
+          <p className="text-sky-100 text-lg font-medium">
+            Sign in to your account to continue
           </p>
-
-          {/*Feature highlights*/}
-          <div className="space-y-3">
-            {[
-              "✓ 2-Factor Authentication secured",
-              "✓ Real-time member verification", 
-              "✓ Encrypted data transmission",
-            ].map((feature, index) => (
-              <div key={index} className="flex items-center space-x-3 text-gray-700">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium">{feature}</span>
-              </div>
-            ))}
-          </div>
-
-          
         </div>
 
-        <div className="flex justify-center items-center">
-          <div className="w-full max-w-md">
-            <div className="bg-white/80 backdrop-blur-lg border border-white/60 rounded-2xl shadow-2xl shadow-blue-500/10 p-12">
-              
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  Member Login
-                </h2>
-                <p className="text-gray-500 font-medium">
-                  Access your engineering portal
-                </p>
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+          {/* Left side - Image */}
+          <div className="relative hidden md:block">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/BackgroundIEM.jpg')",
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-blue-900/80 backdrop-blur-[2px]"></div>
+            </div>
+            <div className="relative h-full flex flex-col justify-center items-center p-12 text-white">
+              <div className="mb-8">
+                <img
+                  src="/iem-logo.jpg"
+                  alt="IEM Logo"
+                  className="w-24 h-24 object-contain mx-auto rounded-xl bg-white/10 p-3 backdrop-blur-md"
+                />
               </div>
-
-              {/* Login Form */}
-              <LoginForm />
-
-              <div className="mt-8 pt-6 border-t border-gray-200/60">
-                <div className="flex items-center justify-between text-xs text-gray-400">
-                  <div className="flex items-center space-x-2">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Only For Verified Member</span>
+              <h2 className="text-3xl font-bold mb-4 text-center">Welcome to IEM Connect</h2>
+              <p className="text-sky-100 text-center leading-relaxed">
+                Institution of Engineers Malaysia<br />
+                UTM Student Section
+              </p>
+              <div className="mt-8 space-y-3">
+                {[
+                  "🔒 2-Factor Authentication",
+                  "⚡ Real-time Verification",
+                  "🛡️ Encrypted & Secure",
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <span>{feature}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span>Secured Login</span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
+          </div>
 
+          {/* Right side - Login Form */}
+          <div className="p-12">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Member Login
+              </h2>
+              <p className="text-gray-600">
+                Access your engineering portal
+              </p>
+            </div>
+
+            <LoginForm />
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Need an account?{' '}
+                <a href="/register" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline">
+                  Register
+                </a>
+              </p>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   );
