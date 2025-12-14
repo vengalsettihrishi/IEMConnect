@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { QRCodeSVG } from "qrcode.react";
@@ -45,8 +45,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const Textarea = (props: any) => (
   <textarea
     {...props}
-    // APPLY DARK TEXTAREA STYLES
-    className={`w-full min-h-[120px] rounded-md border border-slate-600 bg-slate-800 text-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${props.className}`}
+    className={`w-full min-h-[120px] rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${props.className}`}
   />
 );
 
@@ -79,7 +78,6 @@ import {
   QrCode,
   Trash2,
   Award,
-  ChevronRight, // Ensure ChevronRight is imported for SidebarButton
 } from "lucide-react";
 
 export default function ViewEventPage() {
@@ -171,13 +169,6 @@ export default function ViewEventPage() {
 
   // Tab state for controlling which tab is active
   const [activeTab, setActiveTab] = useState("details");
-  
-    
-  const safeCost = useMemo(() => {
-    const n = Number(event?.cost);
-    return Number.isFinite(n) ? n : 0;
-  }, [event?.cost]);
-
 
   // Fetch event data
   useEffect(() => {
@@ -424,12 +415,11 @@ export default function ViewEventPage() {
     }
   };
 
-  // Load participants when users tab is accessed (admin)
+  // Load participants when users tab is accessed
   useEffect(() => {
     if (isAdmin && eventId) {
       handleViewParticipants();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId, isAdmin]);
 
   const handleCheckIn = async () => {
@@ -691,154 +681,122 @@ export default function ViewEventPage() {
 
   if (!user) return null;
 
-  // Simple status badge styling
-  const statusConfig = useMemo(() => {
-    const base =
-      "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border";
-    if (!event) return { text: "", className: `${base} border-slate-600` };
-
-    switch (event.status) {
-      case "Upcoming":
-        return {
-          text: "Upcoming",
-          className: `${base} bg-indigo-900/40 border-indigo-500/70 text-indigo-200`,
-        };
-      case "Open":
-        return {
-          text: "Open",
-          className: `${base} bg-emerald-900/40 border-emerald-500/70 text-emerald-200`,
-        };
-      case "Completed":
-        return {
-          text: "Completed",
-          className: `${base} bg-slate-800 border-slate-500 text-slate-200`,
-        };
-      default:
-        return {
-          text: event.status,
-          className: `${base} bg-slate-800 border-slate-500 text-slate-200`,
-        };
-    }
-  }, [event]);
-
   return (
-    // APPLY DARK BACKGROUND: bg-slate-900
-    <div className="flex min-h-screen bg-slate-900 text-slate-100">
+    <div className="flex min-h-screen bg-[#F3F6FB] text-slate-900">
+      {/* SIDEBAR */}
       <aside
-  className={`sticky top-0 h-screen transition-all duration-300 ease-in-out ${
-    sidebarOpen ? "w-64" : "w-20"
-  } bg-gradient-to-b from-[#071129] to-gray-900 text-white shadow-2xl border-r border-slate-700 flex flex-col`}
->
-  {/* sidebar header */}
-  <div className="flex items-center justify-between px-4 py-5 border-b border-white/10">
-    <div className="flex items-center gap-3">
-      <div
-        className={`bg-white rounded-xl p-2 shadow-md flex items-center justify-center ${
-          sidebarOpen ? "w-12 h-12" : "w-10 h-10"
-        }`}
+        className={`transition-all duration-300 ${
+          sidebarOpen ? "w-72" : "w-20"
+        } bg-[#071129] text-white shadow-xl`}
       >
-        <img
-          src="/iem-logo.jpg"
-          alt="IEM UTM Logo"
-          className="object-contain w-full h-full"
-        />
-      </div>
+        <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div
+              className={`bg-white/90 rounded-xl shadow-md flex items-center justify-center ${
+                sidebarOpen ? "w-14 h-14" : "w-12 h-12"
+              }`}
+            >
+              <img
+                src="/iem-logo.jpg"
+                className={`object-contain ${
+                  sidebarOpen ? "w-10 h-10" : "w-8 h-8"
+                }`}
+              />
+            </div>
 
-      {sidebarOpen && (
-        <div>
-          <div className="text-base font-extrabold tracking-wide">IEM Connect</div>
-          <div className="text-xs text-slate-400 font-medium">
-            {isAdmin ? "Admin Portal" : "Member Dashboard"}
+            {sidebarOpen && (
+              <div>
+                <div className="text-sm font-semibold">IEM Connect</div>
+                <div className="text-xs text-slate-300">
+                  {isAdmin ? "Admin Panel" : "Member Portal"}
+                </div>
+              </div>
+            )}
           </div>
+
+          <button
+            onClick={() => setSidebarOpen((s) => !s)}
+            className="p-2 text-slate-200 rounded hover:bg-white/10"
+          >
+            <Menu size={18} />
+          </button>
         </div>
-      )}
-    </div>
 
-    <button
-      onClick={() => setSidebarOpen((s) => !s)}
-      className="p-2 text-slate-200 rounded-lg hover:bg-white/10"
-    >
-      <Menu size={18} />
-    </button>
-  </div>
+        <nav className="px-3 py-6 space-y-2">
+          <SidebarButton
+            icon={<PieChart size={18} />}
+            label="Dashboard"
+            open={sidebarOpen}
+            onClick={() => router.push("/dashboard")}
+          />
+          {isAdmin && (
+            <SidebarButton
+              icon={<FileText size={18} />}
+              label="Analytics"
+              open={sidebarOpen}
+              onClick={() => router.push("/admin/reports")}
+            />
+          )}
+          <SidebarButton
+            icon={<Calendar size={18} />}
+            label="Events"
+            open={sidebarOpen}
+            active
+            onClick={() => router.push("/event")}
+          />
+          <SidebarButton
+            icon={<CheckSquare size={18} />}
+            label="Attendance"
+            open={sidebarOpen}
+            onClick={() => router.push("/attendance")}
+          />
+          <SidebarButton
+            icon={<Bell size={18} />}
+            label="Notifications"
+            open={sidebarOpen}
+            onClick={() => router.push("/admin/notifications")}
+          />
+          <SidebarButton
+            icon={<Settings size={18} />}
+            label="Settings"
+            open={sidebarOpen}
+            onClick={() => router.push("/settings")}
+          />
+          <SidebarButton
+            icon={<HelpCircle size={18} />}
+            label="Help"
+            open={sidebarOpen}
+            onClick={() => router.push("/admin/help")}
+          />
 
-  {/* menu (MATCHED EXACT SPACING FROM DASHBOARD) */}
-  <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-    <SidebarButton
-      open={sidebarOpen}
-      icon={<PieChart size={20} />}
-      label="Dashboard"
-      onClick={() => router.push("/dashboard")}
-    />
-
-    {isAdmin && (
-      <SidebarButton
-        open={sidebarOpen}
-        icon={<FileText size={20} />}
-        label="Analytics & Reports"
-        onClick={() => router.push("/admin/reports")}
-      />
-    )}
-
-    <SidebarButton
-      open={sidebarOpen}
-      icon={<Calendar size={20} />}
-      label="Events"
-      onClick={() => router.push("/event")}
-      active
-    />
-
-    <SidebarButton
-      open={sidebarOpen}
-      icon={<CheckSquare size={20} />}
-      label="Attendance"
-      onClick={() => router.push("/attendance")}
-    />
-
-    <SidebarButton
-      open={sidebarOpen}
-      icon={<Settings size={20} />}
-      label="Settings"
-      onClick={() => router.push("/settings")}
-    />
-
-    <SidebarButton
-      open={sidebarOpen}
-      icon={<HelpCircle size={20} />}
-      label="Help Center"
-      onClick={() => router.push("/admin/help")}
-    />
-
-    <div className="mt-6 border-t border-white/10 pt-4">
-      <SidebarButton
-        open={sidebarOpen}
-        icon={<LogOut size={20} />}
-        label="Logout"
-        onClick={logout}
-        variant="destructive"
-      />
-    </div>
-  </nav>
-</aside>
-
+          <div className="mt-6 border-t border-white/10 pt-4">
+            <SidebarButton
+              icon={<LogOut size={18} />}
+              label="Logout"
+              open={sidebarOpen}
+              onClick={logout}
+            />
+          </div>
+        </nav>
+      </aside>
 
       {/* MAIN AREA */}
       <div className="flex-1">
-        {/* APPLY GLASSY HEADER: Semi-transparent dark background, white text */}
-        <header className="flex items-center justify-between px-8 py-4 sticky top-0 bg-white/10 backdrop-blur-xl shadow-lg border-b border-white/20 z-40">
+        {/* HEADER */}
+        <header className="flex items-center justify-between px-8 py-4 sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-40">
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/event")}
-              className="p-2 rounded hover:bg-white/10 text-white"
+              className="p-2 rounded hover:bg-slate-100"
             >
-              <ArrowLeft size={20} className="text-white" />
+              <ArrowLeft size={20} />
             </button>
 
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-white">
+              <h2 className="text-2xl font-semibold tracking-tight">
                 View Event
               </h2>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-slate-500">
                 Event details & director information
               </p>
             </div>
@@ -849,9 +807,7 @@ export default function ViewEventPage() {
             <NotificationBell />
 
             <div className="text-right">
-              <div className="text-sm font-semibold text-white">
-                {user.name}
-              </div>
+              <div className="text-sm font-semibold">{user.name}</div>
               <div className="text-xs text-slate-400 capitalize">
                 {user.role}
               </div>
@@ -859,16 +815,10 @@ export default function ViewEventPage() {
 
             <button
               onClick={() => router.push("/profile")}
-              className="rounded-full overflow-hidden border-2 border-transparent shadow hover:ring-2 hover:ring-indigo-500 transition-colors cursor-pointer"
+              className="rounded-full overflow-hidden border border-slate-300 shadow-sm hover:border-blue-500 transition-colors cursor-pointer"
               title="View Profile"
             >
               <UserAvatar size="md" />
-            </button>
-            <button
-              onClick={logout}
-              className="p-2 rounded-lg hover:bg-white/10 text-white"
-            >
-              <LogOut size={18} className="text-white" />
             </button>
           </div>
         </header>
@@ -876,1166 +826,861 @@ export default function ViewEventPage() {
         {/* CONTENT */}
         <main className="px-8 py-10 max-w-7xl mx-auto">
           {loading ? (
-            <div className="text-center py-16 text-slate-500">
+            <div className="text-center py-8 text-gray-500">
               Loading event...
             </div>
           ) : error ? (
-            // APPLY DARK ERROR STYLES
-            <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
               {error}
             </div>
           ) : !event ? (
-            <div className="text-center py-16 text-slate-500">
+            <div className="text-center py-8 text-gray-500">
               Event not found
             </div>
           ) : (
-            <>
-              {/* HERO SUMMARY CARD */}
-              <Card className="mb-8 bg-gradient-to-br from-slate-900/90 via-slate-800 to-slate-900 border border-slate-700 shadow-xl relative overflow-hidden">
-                <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl" />
-                <div className="pointer-events-none absolute -left-10 -bottom-12 h-40 w-40 rounded-full bg-blue-500/5 blur-3xl" />
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList
+                className={`grid w-full ${
+                  isAdmin ? "grid-cols-4" : "grid-cols-1"
+                } mb-6`}
+              >
+                <TabsTrigger value="details">Event Details</TabsTrigger>
+                {isAdmin && (
+                  <TabsTrigger value="users">Registered Users</TabsTrigger>
+                )}
+                {isAdmin && (
+                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                )}
+                {isAdmin && (
+                  <TabsTrigger value="attendance">Attendance</TabsTrigger>
+                )}
+              </TabsList>
 
-                <CardContent className="pt-6 relative">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className={statusConfig.className}>
-                          {statusConfig.text}
-                        </span>
-                        {event.attendance_status === "Active" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-900/40 border border-emerald-500/60 px-3 py-1 text-xs font-semibold text-emerald-200">
-                            <CheckSquare size={14} />
-                            Attendance Open
-                          </span>
-                        )}
-                        {event.status === "Completed" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-900/40 border border-amber-500/60 px-3 py-1 text-xs font-semibold text-amber-200">
-                            <Award size={14} />
-                            Certificates Available
-                          </span>
-                        )}
+              {/* EVENT DETAILS TAB */}
+              <TabsContent value="details" className="space-y-6">
+                {/* COMPLETED EVENT BANNER */}
+                {event.status === "Completed" && (
+                  <Card className="bg-slate-50 border-slate-200 shadow">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                            <CheckCircle size={20} className="text-slate-600" />
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="px-3 py-1 bg-slate-200 text-slate-700 rounded-full text-sm font-medium">
+                              Event Completed
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-700">
+                            This event has been completed. Registration and
+                            check-in are no longer available.
+                          </p>
+                        </div>
                       </div>
-                      <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                        {event.title}
-                      </h1>
-                      {event.description && (
-                        <p className="max-w-3xl text-sm text-slate-300">
-                          {event.description}
-                        </p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {registrationMessage && (
+                  <div
+                    className={`px-4 py-3 rounded-lg ${
+                      registrationMessage.type === "success"
+                        ? "bg-green-50 border border-green-200 text-green-800"
+                        : "bg-red-50 border border-red-200 text-red-800"
+                    }`}
+                  >
+                    {registrationMessage.text}
+                  </div>
+                )}
+
+                {/* START EVENT (ADMIN ONLY - UPCOMING EVENTS) */}
+                {isAdmin && event.status === "Upcoming" && (
+                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg border-green-200">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-green-900">
+                        <PlayCircle size={20} />
+                        Start Event
+                      </CardTitle>
+                      <CardDescription className="text-green-700">
+                        Change event status from 'Upcoming' to 'Open' when the
+                        event time arrives
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {startEventMessage && (
+                        <div
+                          className={`px-4 py-3 rounded-lg ${
+                            startEventMessage.type === "success"
+                              ? "bg-green-50 border border-green-200 text-green-800"
+                              : "bg-red-50 border border-red-200 text-red-800"
+                          }`}
+                        >
+                          {startEventMessage.text}
+                        </div>
                       )}
 
-                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                        <div className="flex items-center gap-2 text-slate-300">
-                          <Calendar size={16} className="text-indigo-400" />
-                          <div className="space-y-0.5">
-                            <p className="font-medium text-slate-100">
-                              Schedule
-                            </p>
+                      <div className="space-y-3">
+                        <div className="bg-white/70 p-4 rounded-lg border border-green-200">
+                          <p className="text-sm text-slate-700 mb-2">
+                            <strong>Event Schedule:</strong>
+                          </p>
+                          <div className="space-y-1 text-sm text-slate-600">
                             <p>
-                              {new Date(
-                                event.start_date
-                              ).toLocaleDateString()}
+                              <strong>Date:</strong>{" "}
+                              {new Date(event.start_date).toLocaleDateString()}
                               {event.end_date !== event.start_date &&
                                 ` - ${new Date(
                                   event.end_date
                                 ).toLocaleDateString()}`}
                             </p>
-                            {(event.start_time || event.end_time) && (
-                              <p className="text-xs text-slate-400">
-                                {event.start_time && `Start: ${event.start_time}`}
-                                {event.start_time && event.end_time && " • "}
-                                {event.end_time && `End: ${event.end_time}`}
+                            {event.start_time && (
+                              <p>
+                                <strong>Start Time:</strong> {event.start_time}
+                              </p>
+                            )}
+                            {event.end_time && (
+                              <p>
+                                <strong>End Time:</strong> {event.end_time}
                               </p>
                             )}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-slate-300">
-                          <Users size={16} className="text-indigo-400" />
-                          <div className="space-y-0.5">
-                            <p className="font-medium text-slate-100">
-                              Participants
-                            </p>
-                            <p>
-                              {event.participant_count || 0} registered
-                              {event.targeted_participants &&
-                                ` / ${event.targeted_participants} target`}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 text-slate-300">
-                          <Award size={16} className="text-indigo-400" />
-                          <div className="space-y-0.5">
-                            <p className="font-medium text-slate-100">
-                              Cost & Eligibility
-                            </p>
-                            <p>
-                              {safeCost > 0 ? `RM ${safeCost.toFixed(2)}` : "Free"}
-                            </p>
-                            <p className="text-xs text-slate-400">
-                              Organized by {event.director_name}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Quick Action Box for non-admins */}
-                    {!isAdmin && (
-                      <div className="w-full md:w-72 rounded-xl border border-slate-600 bg-slate-900/70 px-4 py-4 shadow-inner">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">
-                          Your Status
+                        <Button
+                          onClick={handleStartEvent}
+                          disabled={startEventLoading}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          <PlayCircle size={18} className="mr-2" />
+                          {startEventLoading
+                            ? "Starting Event..."
+                            : "Start Event"}
+                        </Button>
+                        <p className="text-xs text-slate-500 text-center">
+                          The event can only be started when the current time is
+                          within the scheduled time window.
                         </p>
-                        {event.is_registered ? (
-                          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-green-900/40 border border-green-500/70 px-3 py-1 text-xs font-semibold text-green-200">
-                            <UserCheck size={14} />
-                            Registered
-                          </div>
-                        ) : (
-                          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-slate-800/80 border border-slate-600 px-3 py-1 text-xs font-semibold text-slate-200">
-                            <UserX size={14} />
-                            Not Registered
-                          </div>
-                        )}
-
-                        <p className="text-xs text-slate-400 mb-3">
-                          {event.status === "Completed"
-                            ? "This event has ended. Thank you for your interest!"
-                            : event.is_registered
-                            ? "You can still unregister before the event starts if needed."
-                            : "Secure your spot by registering now."}
-                        </p>
-
-                        {event.status !== "Completed" && (
-                          <Button
-                            onClick={
-                              event.is_registered
-                                ? handleUnregister
-                                : handleRegister
-                            }
-                            disabled={registering}
-                            className={`w-full gap-2 ${
-                              event.is_registered
-                                ? "bg-red-600 hover:bg-red-700"
-                                : "bg-indigo-600 hover:bg-indigo-700"
-                            }`}
-                          >
-                            {event.is_registered ? (
-                              <>
-                                <UserX size={16} />
-                                {registering
-                                  ? "Unregistering..."
-                                  : "Unregister"}
-                              </>
-                            ) : (
-                              <>
-                                <UserCheck size={16} />
-                                {registering
-                                  ? "Registering..."
-                                  : "Register Now"}
-                              </>
-                            )}
-                          </Button>
-                        )}
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
+                )}
 
-              <Tabs
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full"
-              >
-                <TabsList
-                  className={`grid w-full mb-6 bg-slate-900/80 border border-slate-700 rounded-xl shadow-inner ${
-                    isAdmin ? "grid-cols-4" : "grid-cols-1"
-                  }`}
-                >
-                  <TabsTrigger
-                    value="details"
-                    className="flex items-center justify-center gap-2 text-slate-300 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
-                  >
-                    <FileText size={16} />
-                    <span>Event Details</span>
-                  </TabsTrigger>
-                  {isAdmin && (
-                    <TabsTrigger
-                      value="users"
-                      className="flex items-center justify-center gap-2 text-slate-300 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
-                    >
-                      <Users size={16} />
-                      <span>Registered Users</span>
-                    </TabsTrigger>
-                  )}
-                  {isAdmin && (
-                    <TabsTrigger
-                      value="notifications"
-                      className="flex items-center justify-center gap-2 text-slate-300 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
-                    >
-                      <Bell size={16} />
-                      <span>Notifications</span>
-                    </TabsTrigger>
-                  )}
-                  {isAdmin && (
-                    <TabsTrigger
-                      value="attendance"
-                      className="flex items-center justify-center gap-2 text-slate-300 data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
-                    >
-                      <CheckSquare size={16} />
-                      <span>Attendance</span>
-                    </TabsTrigger>
-                  )}
-                </TabsList>
-
-                {/* EVENT DETAILS TAB */}
-                <TabsContent value="details" className="space-y-6">
-                  {/* COMPLETED EVENT BANNER */}
-                  {event.status === "Completed" && (
-                    <Card className="bg-gradient-to-r from-emerald-900/60 via-slate-800 to-slate-800 border border-emerald-600/70 shadow-lg">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-emerald-900 flex items-center justify-center border border-emerald-500/70">
-                              <CheckCircle
-                                size={20}
-                                className="text-emerald-300"
-                              />
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                              <span className="px-3 py-1 bg-emerald-900/70 text-emerald-200 rounded-full text-xs font-semibold border border-emerald-500/70">
-                                Event Completed
-                              </span>
-                              <span className="px-3 py-1 bg-slate-900/70 text-slate-200 rounded-full text-xs font-semibold border border-slate-600">
-                                Certificates Available
-                              </span>
-                            </div>
-                            <p className="text-sm text-slate-100">
-                              This event has been completed. Registration and
-                              check-in are closed, but participants can still
-                              download their certificates.
-                            </p>
-                          </div>
+                {/* END EVENT (ADMIN ONLY - OPEN EVENTS) */}
+                {isAdmin && event.status === "Open" && (
+                  <Card className="bg-gradient-to-br from-red-50 to-orange-50 shadow-lg border-red-200">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-red-900">
+                        <StopCircle size={20} />
+                        End Event
+                      </CardTitle>
+                      <CardDescription className="text-red-700">
+                        Change event status from 'Open' to 'Completed'. This
+                        will make certificates available for download.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {endEventMessage && (
+                        <div
+                          className={`px-4 py-3 rounded-lg ${
+                            endEventMessage.type === "success"
+                              ? "bg-green-50 border border-green-200 text-green-800"
+                              : "bg-red-50 border border-red-200 text-red-800"
+                          }`}
+                        >
+                          {endEventMessage.text}
                         </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {registrationMessage && (
-                    // APPLY DARK MESSAGE STYLES
-                    <div
-                      className={`px-4 py-3 rounded-lg ${
-                        registrationMessage.type === "success"
-                          ? "bg-green-900/50 border border-green-700 text-green-300"
-                          : "bg-red-900/50 border border-red-700 text-red-300"
-                      }`}
-                    >
-                      {registrationMessage.text}
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 lg:grid-cols-[2fr,1.4fr] gap-6">
-                    <div className="space-y-6">
-                      {/* START EVENT / END EVENT CARDS (ADMIN) */}
-                      {isAdmin && event.status === "Upcoming" && (
-                        <Card className="bg-slate-800 shadow-lg border border-slate-600">
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-green-400">
-                              <PlayCircle size={20} />
-                              Start Event
-                            </CardTitle>
-                            <CardDescription className="text-green-500">
-                              Change event status from 'Upcoming' to 'Open'
-                              when the event time arrives
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            {startEventMessage && (
-                              <div
-                                className={`px-4 py-3 rounded-lg ${
-                                  startEventMessage.type === "success"
-                                    ? "bg-green-900/50 border border-green-700 text-green-300"
-                                    : "bg-red-900/50 border border-red-700 text-red-300"
-                                }`}
-                              >
-                                {startEventMessage.text}
-                              </div>
-                            )}
-
-                            <div className="space-y-3">
-                              <div className="bg-slate-900/70 p-4 rounded-lg border border-green-700/60">
-                                <p className="text-sm text-slate-300 mb-2">
-                                  <strong>Event Schedule:</strong>
-                                </p>
-                                <div className="space-y-1 text-sm text-slate-300">
-                                  <p>
-                                    <strong>Date:</strong>{" "}
-                                    {new Date(
-                                      event.start_date
-                                    ).toLocaleDateString()}
-                                    {event.end_date !== event.start_date &&
-                                      ` - ${new Date(
-                                        event.end_date
-                                      ).toLocaleDateString()}`}
-                                  </p>
-                                  {event.start_time && (
-                                    <p>
-                                      <strong>Start Time:</strong>{" "}
-                                      {event.start_time}
-                                    </p>
-                                  )}
-                                  {event.end_time && (
-                                    <p>
-                                      <strong>End Time:</strong>{" "}
-                                      {event.end_time}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-
-                              <Button
-                                onClick={handleStartEvent}
-                                disabled={startEventLoading}
-                                className="w-full bg-green-600 hover:bg-green-700"
-                              >
-                                <PlayCircle size={18} className="mr-2" />
-                                {startEventLoading
-                                  ? "Starting Event..."
-                                  : "Start Event"}
-                              </Button>
-                              <p className="text-xs text-slate-400 text-center">
-                                The event can only be started when the current
-                                time is within the scheduled time window.
-                              </p>
-                            </div>
-                          </CardContent>
-                        </Card>
                       )}
 
-                      {isAdmin && event.status === "Open" && (
-                        <Card className="bg-slate-800 shadow-lg border border-slate-600">
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-red-400">
-                              <StopCircle size={20} />
-                              End Event
-                            </CardTitle>
-                            <CardDescription className="text-red-500">
-                              Change event status from 'Open' to 'Completed'.
-                              This will make certificates available for
-                              download.
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
+                      <AlertDialog
+                        open={endEventDialogOpen}
+                        onOpenChange={setEndEventDialogOpen}
+                      >
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            className="w-full bg-red-600 hover:bg-red-700"
+                            onClick={() => {
+                              setEndEventConfirmText("");
+                              setEndEventMessage(null);
+                            }}
+                          >
+                            <StopCircle size={18} className="mr-2" />
+                            End Event
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>End Event</AlertDialogTitle>
+                            <AlertDialogDescription asChild>
+                              <div>
+                                <p>
+                                  Are you sure you want to end this event? This
+                                  action will:
+                                </p>
+                                <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                                  <li>
+                                    Change the event status to 'Completed'
+                                  </li>
+                                  <li>
+                                    Make certificates available for download to
+                                    all participants who attended
+                                  </li>
+                                  <li>
+                                    Prevent further attendance check-ins for
+                                    this event
+                                  </li>
+                                </ul>
+                                <p className="mt-3 font-semibold text-red-600">
+                                  This action cannot be undone.
+                                </p>
+                              </div>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">
+                                Type <span className="font-mono">CLOSE</span> to
+                                confirm:
+                              </label>
+                              <Input
+                                value={endEventConfirmText}
+                                onChange={(e) => {
+                                  setEndEventConfirmText(e.target.value);
+                                  setEndEventMessage(null);
+                                }}
+                                placeholder="Type CLOSE"
+                                disabled={endEventLoading}
+                                className="font-mono"
+                              />
+                              {endEventConfirmText &&
+                                endEventConfirmText !== "CLOSE" && (
+                                  <p className="text-sm text-red-600 mt-1">
+                                    Please type "CLOSE" exactly to confirm
+                                  </p>
+                                )}
+                            </div>
                             {endEventMessage && (
                               <div
-                                className={`px-4 py-3 rounded-lg ${
-                                  endEventMessage.type === "success"
-                                    ? "bg-green-900/50 border border-green-700 text-green-300"
-                                    : "bg-red-900/50 border border-red-700 text-red-300"
+                                className={`px-3 py-2 rounded ${
+                                  endEventMessage.type === "error"
+                                    ? "bg-red-50 text-red-800"
+                                    : "bg-green-50 text-green-800"
                                 }`}
                               >
                                 {endEventMessage.text}
                               </div>
                             )}
-
-                            <AlertDialog
-                              open={endEventDialogOpen}
-                              onOpenChange={setEndEventDialogOpen}
-                            >
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  className="w-full bg-red-600 hover:bg-red-700"
-                                  onClick={() => {
-                                    setEndEventConfirmText("");
-                                    setEndEventMessage(null);
-                                  }}
-                                >
-                                  <StopCircle size={18} className="mr-2" />
-                                  End Event
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent className="bg-slate-800 text-white border-slate-600">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle className="text-white">
-                                    End Event
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription asChild>
-                                    <div>
-                                      <p className="text-slate-300">
-                                        Are you sure you want to end this
-                                        event? This action will:
-                                      </p>
-                                      <ul className="list-disc list-inside mt-2 space-y-1 text-sm text-slate-400">
-                                        <li>
-                                          Change the event status to 'Completed'
-                                        </li>
-                                        <li>
-                                          Make certificates available for
-                                          download to all participants who
-                                          attended
-                                        </li>
-                                        <li>
-                                          Prevent further attendance check-ins
-                                          for this event
-                                        </li>
-                                      </ul>
-                                      <p className="mt-3 font-semibold text-red-400">
-                                        This action cannot be undone.
-                                      </p>
-                                    </div>
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <div className="space-y-4 py-4">
-                                  <div>
-                                    <label className="block text-sm font-medium mb-2 text-slate-300">
-                                      Type{" "}
-                                      <span className="font-mono">CLOSE</span>{" "}
-                                      to confirm:
-                                    </label>
-                                    <Input
-                                      value={endEventConfirmText}
-                                      onChange={(e) => {
-                                        setEndEventConfirmText(e.target.value);
-                                        setEndEventMessage(null);
-                                      }}
-                                      placeholder="Type CLOSE"
-                                      disabled={endEventLoading}
-                                      className="font-mono bg-slate-900 border-slate-600 text-white placeholder-slate-500"
-                                    />
-                                    {endEventConfirmText &&
-                                      endEventConfirmText !== "CLOSE" && (
-                                        <p className="text-sm text-red-400 mt-1">
-                                          Please type "CLOSE" exactly to
-                                          confirm
-                                        </p>
-                                      )}
-                                  </div>
-                                  {endEventMessage && (
-                                    <div
-                                      className={`px-3 py-2 rounded border ${
-                                        endEventMessage.type === "error"
-                                          ? "bg-red-900/50 text-red-300 border-red-700"
-                                          : "bg-green-900/50 text-green-300 border-green-700"
-                                      }`}
-                                    >
-                                      {endEventMessage.text}
-                                    </div>
-                                  )}
-                                </div>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel
-                                    disabled={endEventLoading}
-                                    onClick={() => {
-                                      setEndEventConfirmText("");
-                                      setEndEventMessage(null);
-                                    }}
-                                    className="bg-slate-700 text-white hover:bg-slate-600"
-                                  >
-                                    Cancel
-                                  </AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={handleEndEvent}
-                                    disabled={
-                                      endEventLoading ||
-                                      endEventConfirmText !== "CLOSE"
-                                    }
-                                    className="bg-red-600 hover:bg-red-700"
-                                  >
-                                    {endEventLoading ? "Ending..." : "End Event"}
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                            <p className="text-xs text-slate-400 text-center">
-                              Ending the event will mark it as completed and
-                              enable certificate downloads for all participants
-                              who attended.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      )}
-
-                      {/* DIRECTOR INFO */}
-                      <Card className="bg-slate-800 shadow border border-slate-600">
-                        <CardHeader>
-                          <CardTitle className="text-white flex items-center gap-2">
-                            <UserCheck size={18} className="text-indigo-400" />
-                            Director Information
-                          </CardTitle>
-                          <CardDescription className="text-slate-400">
-                            Details of the event director
-                          </CardDescription>
-                        </CardHeader>
-
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <InputField
-                            label="Full Name"
-                            editable={editing}
-                            value={formData.directorName}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                directorName: e.target.value,
-                              })
-                            }
-                          />
-                          <InputField
-                            label="Matric Number"
-                            editable={editing}
-                            value={formData.matric}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                matric: e.target.value,
-                              })
-                            }
-                          />
-                          <InputField
-                            label="Phone Number"
-                            editable={editing}
-                            value={formData.phone}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                phone: e.target.value,
-                              })
-                            }
-                          />
-                          <InputField
-                            label="Email Address"
-                            editable={editing}
-                            value={formData.email}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                email: e.target.value,
-                              })
-                            }
-                          />
-                        </CardContent>
-                      </Card>
-
-                      {/* EVENT INFO */}
-                      <Card className="bg-slate-800 shadow border border-slate-600">
-                        <CardHeader>
-                          <CardTitle className="text-white flex items-center gap-2">
-                            <FileText size={18} className="text-indigo-400" />
-                            Event Information
-                          </CardTitle>
-                          <CardDescription className="text-slate-400">
-                            Complete event details
-                          </CardDescription>
-                        </CardHeader>
-
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <InputField
-                            label="Event Title"
-                            editable={editing}
-                            value={formData.title}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                title: e.target.value,
-                              })
-                            }
-                            className="md:col-span-2"
-                          />
-
-                          <div className="md:col-span-2">
-                            <span className="text-sm font-medium text-slate-300">
-                              Description
-                            </span>
-                            {editing ? (
-                              <Textarea
-                                value={formData.description}
-                                onChange={(e) =>
-                                  setFormData({
-                                    ...formData,
-                                    description: e.target.value,
-                                  })
-                                }
-                              />
-                            ) : (
-                              <div className="mt-1 px-3 py-2 rounded-md bg-slate-900/70 border border-slate-700 text-sm text-slate-100 min-h-[44px] flex items-center">
-                                {event.description || (
-                                  <span className="text-slate-500">
-                                    No description provided
-                                  </span>
-                                )}
-                              </div>
-                            )}
                           </div>
-
-                          <InputField
-                            label="Cost (RM)"
-                            editable={editing}
-                            value={formData.cost}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                cost: e.target.value,
-                              })
-                            }
-                            type="number"
-                          />
-                          <InputField
-                            label="Targeted Participants"
-                            editable={editing}
-                            value={formData.targetedParticipants}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                targetedParticipants: e.target.value,
-                              })
-                            }
-                          />
-
-                          <FileField
-                            label="Paperwork"
-                            file={event.paperwork_url}
-                            editable={editing}
-                            onChange={(e: any) =>
-                              setNewPaperwork(e.target.files?.[0] || null)
-                            }
-                          />
-                          {editing && (
-                            <PosterField
-                              poster={event.poster_url}
-                              editable={editing}
-                              onChange={(e: any) =>
-                                setNewPoster(e.target.files?.[0] || null)
+                          <AlertDialogFooter>
+                            <AlertDialogCancel
+                              disabled={endEventLoading}
+                              onClick={() => {
+                                setEndEventConfirmText("");
+                                setEndEventMessage(null);
+                              }}
+                            >
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleEndEvent}
+                              disabled={
+                                endEventLoading ||
+                                endEventConfirmText !== "CLOSE"
                               }
-                            />
-                          )}
-
-                          <InputField
-                            label="Date From"
-                            type="date"
-                            editable={editing}
-                            value={formData.startDate}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                startDate: e.target.value,
-                              })
-                            }
-                          />
-                          <InputField
-                            label="Date Until"
-                            type="date"
-                            editable={editing}
-                            value={formData.endDate}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                endDate: e.target.value,
-                              })
-                            }
-                          />
-                          {/* TIME FIELDS */}
-                          <InputField
-                            label="Start Time"
-                            type="time"
-                            editable={editing}
-                            value={formData.startTime}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                startTime: e.target.value,
-                              })
-                            }
-                          />
-                          <InputField
-                            label="End Time"
-                            type="time"
-                            editable={editing}
-                            value={formData.endTime}
-                            onChange={(e: any) =>
-                              setFormData({
-                                ...formData,
-                                endTime: e.target.value,
-                              })
-                            }
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* RIGHT COLUMN: STATS + ADMIN ACTIONS */}
-                    <div className="space-y-6">
-                      {/* EVENT STATISTICS */}
-                      <Card className="bg-slate-800 shadow border border-slate-600">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2 text-white">
-                            <Users size={20} className="text-indigo-400" />
-                            Event Statistics
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div className="rounded-lg bg-slate-900/80 border border-slate-700 p-3">
-                              <p className="text-xs uppercase tracking-wide text-slate-400 mb-1">
-                                Registered
-                              </p>
-                              <p className="text-2xl font-bold text-indigo-400">
-                                {event.participant_count || 0}
-                              </p>
-                              <p className="text-xs text-slate-500 mt-1">
-                                {event.targeted_participants
-                                  ? `Target ${event.targeted_participants}`
-                                  : "No target set"}
-                              </p>
-                            </div>
-                            <div className="rounded-lg bg-slate-900/80 border border-slate-700 p-3">
-                              <p className="text-xs uppercase tracking-wide text-slate-400 mb-1">
-                                Event Status
-                              </p>
-                              <p className="text-sm mb-2">
-                                <span className={statusConfig.className}>
-                                  {statusConfig.text}
-                                </span>
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                Attendance:{" "}
-                                <span className="font-medium text-slate-200">
-                                  {event.attendance_status}
-                                </span>
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="mt-2">
-                            <p className="text-sm text-slate-400 mb-2">
-                              Your Status
-                            </p>
-                            {event.is_registered ? (
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="px-3 py-1 bg-green-900/50 text-green-300 rounded-full text-xs font-semibold border border-green-700">
-                                  ✓ Registered
-                                </span>
-                                {hasCheckedIn && (
-                                  <span className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-xs font-semibold border border-blue-700 flex items-center gap-1">
-                                    <CheckCircle size={14} />
-                                    Attended
-                                  </span>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-sm text-slate-400">
-                                Not registered
-                              </span>
-                            )}
-                          </div>
-
-                          {/* REGISTRATION ACTION BUTTON (non-admin quick duplicate) */}
-                          {event.status !== "Completed" && (
-                            <div className="mt-6 pt-4 border-t border-slate-700">
-                              {event.is_registered ? (
-                                <Button
-                                  onClick={handleUnregister}
-                                  disabled={registering}
-                                  variant="destructive"
-                                  className="w-full gap-2 bg-red-600 hover:bg-red-700"
-                                >
-                                  <UserX size={18} />
-                                  {registering
-                                    ? "Unregistering..."
-                                    : "Unregister from Event"}
-                                </Button>
-                              ) : (
-                                <Button
-                                  onClick={handleRegister}
-                                  disabled={registering}
-                                  className="w-full gap-2 bg-blue-600 hover:bg-blue-700"
-                                >
-                                  <UserCheck size={18} />
-                                  {registering
-                                    ? "Registering..."
-                                    : "Register for Event"}
-                                </Button>
-                              )}
-                            </div>
-                          )}
-
-                          {/* ADMIN VIEW PARTICIPANTS BUTTON */}
-                          {isAdmin && (
-                            <div className="mt-6 pt-4 border-t border-slate-700">
-                              <Button
-                                onClick={handleViewParticipants}
-                                disabled={loadingParticipants}
-                                className="w-full gap-2 bg-purple-600 hover:bg-purple-700"
-                              >
-                                <Users size={18} />
-                                {loadingParticipants
-                                  ? "Loading..."
-                                  : "View Participant List"}
-                              </Button>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-
-                      {/* FOOTER BUTTONS (ADMIN) */}
-                      {isAdmin && (
-                        <Card className="bg-slate-800 border border-slate-600 shadow">
-                          <CardHeader>
-                            <CardTitle className="text-white flex items-center gap-2">
-                              <Settings
-                                size={18}
-                                className="text-indigo-400"
-                              />
-                              Admin Actions
-                            </CardTitle>
-                            <CardDescription className="text-slate-400">
-                              Manage this event
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="flex flex-col gap-4">
-                              {event.status !== "Completed" ? (
-                                <Button
-                                  className="w-full px-6 py-2 bg-blue-600 text-white hover:bg-blue-700"
-                                  onClick={() =>
-                                    editing ? handleUpdate() : setEditing(true)
-                                  }
-                                  disabled={loading}
-                                >
-                                  {loading
-                                    ? "Saving..."
-                                    : editing
-                                    ? "Save Changes"
-                                    : "Edit Event"}
-                                </Button>
-                              ) : (
-                                <div className="text-xs text-slate-400 italic">
-                                  Completed events cannot be edited
-                                </div>
-                              )}
-
-                              <div className="flex gap-3">
-                                <Button className="flex-1 px-6 py-2 bg-slate-700 text-white hover:bg-slate-600">
-                                  Generate Report
-                                </Button>
-
-                                <AlertDialog
-                                  open={deleteDialogOpen}
-                                  onOpenChange={setDeleteDialogOpen}
-                                >
-                                  <AlertDialogTrigger asChild>
-                                    <Button
-                                      variant="destructive"
-                                      className="flex-1 px-6 py-2 gap-2 bg-red-600 hover:bg-red-700"
-                                      disabled={deleting}
-                                    >
-                                      <Trash2 size={18} />
-                                      Delete Event
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent className="bg-slate-800 text-white border-slate-600">
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle className="text-white">
-                                        Delete Event
-                                      </AlertDialogTitle>
-                                      <AlertDialogDescription className="text-slate-400">
-                                        Are you sure you want to delete "
-                                        {event?.title}"?
-                                        {event?.status === "Completed" && (
-                                          <span className="block mt-2 text-red-400 font-semibold">
-                                            Warning: This is a completed event.
-                                            Deleting it will permanently remove
-                                            all historical data, including
-                                            attendance records and participant
-                                            information.
-                                          </span>
-                                        )}
-                                        This action cannot be undone and will
-                                        permanently remove the event, all
-                                        registrations, and attendance records.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel
-                                        disabled={deleting}
-                                        className="bg-slate-700 text-white hover:bg-slate-600"
-                                      >
-                                        Cancel
-                                      </AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={handleDeleteEvent}
-                                        disabled={deleting}
-                                        className="bg-red-600 hover:bg-red-700"
-                                      >
-                                        {deleting
-                                          ? "Deleting..."
-                                          : "Delete Event"}
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
-
-                {/* REGISTERED USERS TAB */}
-                {isAdmin && (
-                  <TabsContent value="users" className="space-y-6">
-                    <Card className="bg-slate-800 shadow border border-slate-600">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-white">
-                          <Users size={20} className="text-indigo-400" />
-                          Registered Participants
-                        </CardTitle>
-                        <CardDescription className="text-slate-400">
-                          Total: {participants.length} participant(s)
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        {error && (
-                          <div className="mb-4 bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg">
-                            <p className="font-medium">
-                              Error loading participants
-                            </p>
-                            <p className="text-sm">{error}</p>
-                          </div>
-                        )}
-                        {loadingParticipants ? (
-                          <p className="text-center text-slate-400 py-8">
-                            Loading participants...
-                          </p>
-                        ) : participants.length === 0 ? (
-                          <div className="text-center py-8">
-                            <p className="text-slate-400 mb-4">
-                              No participants registered yet.
-                            </p>
-                            <Button
-                              onClick={handleViewParticipants}
-                              className="gap-2 bg-purple-600 hover:bg-purple-700"
-                              disabled={loadingParticipants}
+                              className="bg-red-600 hover:bg-red-700"
                             >
-                              <Users size={18} />
-                              {loadingParticipants
-                                ? "Loading..."
-                                : "Load Participants"}
-                            </Button>
+                              {endEventLoading ? "Ending..." : "End Event"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      <p className="text-xs text-slate-500 text-center">
+                        Ending the event will mark it as completed and enable
+                        certificate downloads for all participants who attended.
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* EVENT STATISTICS */}
+                <Card className="bg-white/70 shadow">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users size={20} />
+                      Event Statistics
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-slate-500">
+                          Registered Participants
+                        </p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {event.participant_count || 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-slate-500">Your Status</p>
+                        {event.is_registered ? (
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                              ✓ Registered
+                            </span>
                           </div>
                         ) : (
-                          <div className="space-y-4">
-                            <div className="flex justify-between items-center mb-4">
-                              <p className="text-sm text-slate-400">
-                                Showing {participants.length} participant(s)
-                              </p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleViewParticipants}
-                                className="gap-2 bg-slate-900 border-slate-600 text-white hover:bg-slate-700"
-                              >
-                                <RefreshCw size={14} className="mr-2" />
-                                Refresh
-                              </Button>
-                            </div>
-                            <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                              {participants.map(
-                                (participant: any, index: number) => (
-                                  <div
-                                    key={participant.id}
-                                    className="p-4 border border-slate-700 rounded-lg bg-slate-900 hover:bg-slate-800 transition-colors"
-                                  >
-                                    <div className="flex items-start justify-between">
-                                      <div className="space-y-1 flex-1">
-                                        <div className="flex items-center gap-3">
-                                          <span className="font-semibold text-slate-400">
-                                            #{index + 1}
-                                          </span>
-                                          <h4 className="font-semibold text-white">
-                                            {participant.user.name}
-                                          </h4>
-                                          <span
-                                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                              participant.status ===
-                                              "registered"
-                                                ? "bg-emerald-900/40 text-emerald-300 border border-emerald-700"
-                                                : participant.status ===
-                                                  "attended"
-                                                ? "bg-blue-900/40 text-blue-300 border border-blue-700"
-                                                : "bg-slate-700 text-slate-300 border border-slate-500"
-                                            }`}
-                                          >
-                                            {participant.status}
-                                          </span>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm text-slate-300 mt-2">
-                                          <p>
-                                            <span className="font-medium">
-                                              Email:
-                                            </span>{" "}
-                                            {participant.user.email}
-                                          </p>
-                                          <p>
-                                            <span className="font-medium">
-                                              Matric:
-                                            </span>{" "}
-                                            {participant.user.matric_number}
-                                          </p>
-                                          <p>
-                                            <span className="font-medium">
-                                              Membership:
-                                            </span>{" "}
-                                            {participant.user.membership_number}
-                                          </p>
-                                          <p>
-                                            <span className="font-medium">
-                                              Faculty:
-                                            </span>{" "}
-                                            {participant.user.faculty}
-                                          </p>
-                                        </div>
-                                        <p className="text-xs text-slate-500 mt-2">
-                                          Registered on:{" "}
-                                          {new Date(
-                                            participant.registration_date
-                                          ).toLocaleString()}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </div>
+                          <span className="text-sm text-slate-600">
+                            Not registered
+                          </span>
                         )}
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                )}
+                      </div>
+                    </div>
 
-                {/* NOTIFICATIONS TAB */}
-                {isAdmin && (
-                  <TabsContent value="notifications" className="space-y-6">
+                    {/* REGISTRATION ACTION BUTTON */}
                     {event.status !== "Completed" && (
-                      <Card className="bg-slate-800 shadow-lg border border-slate-600">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2 text-indigo-400">
-                            <Bell size={20} />
-                            Send Announcement
-                          </CardTitle>
-                          <CardDescription className="text-slate-400">
-                            Send a notification to all registered participants
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          {announcementResult && (
-                            <div
-                              className={`px-4 py-3 rounded-lg ${
-                                announcementResult.type === "success"
-                                  ? "bg-green-900/50 border border-green-700 text-green-300"
-                                  : "bg-red-900/50 border border-red-700 text-red-300"
-                              }`}
-                            >
-                              {announcementResult.text}
-                            </div>
-                          )}
+                      <div className="mt-6 pt-4 border-t border-slate-200">
+                        {event.is_registered ? (
+                          <Button
+                            onClick={handleUnregister}
+                            disabled={registering}
+                            variant="destructive"
+                            className="w-full gap-2"
+                          >
+                            <UserX size={18} />
+                            {registering
+                              ? "Unregistering..."
+                              : "Unregister from Event"}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleRegister}
+                            disabled={registering}
+                            className="w-full gap-2 bg-blue-600 hover:bg-blue-700"
+                          >
+                            <UserCheck size={18} />
+                            {registering
+                              ? "Registering..."
+                              : "Register for Event"}
+                          </Button>
+                        )}
+                      </div>
+                    )}
 
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-sm font-medium text-slate-300 mb-1">
-                                Subject
-                              </label>
-                              {/* APPLY DARK INPUT STYLE */}
-                              <Input
-                                type="text"
-                                placeholder="Announcement subject..."
-                                value={announcementSubject}
-                                onChange={(e) =>
-                                  setAnnouncementSubject(e.target.value)
-                                }
-                                className="w-full bg-slate-900 border-slate-600 text-white placeholder-slate-500"
-                              />
-                            </div>
+                    {/* ADMIN VIEW PARTICIPANTS BUTTON */}
+                    {isAdmin && (
+                      <div className="mt-6 pt-4 border-t border-slate-200">
+                        <Button
+                          onClick={handleViewParticipants}
+                          disabled={loadingParticipants}
+                          className="w-full gap-2 bg-purple-600 hover:bg-purple-700"
+                        >
+                          <Users size={18} />
+                          {loadingParticipants
+                            ? "Loading..."
+                            : "View Participant List"}
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
 
-                            <div>
-                              <label className="block text-sm font-medium text-slate-300 mb-1">
-                                Message
-                              </label>
-                              <Textarea
-                                placeholder="Type your announcement message here..."
-                                value={announcementMessage}
-                                onChange={(e) =>
-                                  setAnnouncementMessage(e.target.value)
-                                }
-                                rows={6}
-                              />
-                            </div>
+                {/* DIRECTOR INFO */}
+                <Card className="bg-white/70 shadow">
+                  <CardHeader>
+                    <CardTitle>Director Information</CardTitle>
+                    <CardDescription>
+                      Details of the event director
+                    </CardDescription>
+                  </CardHeader>
 
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                id="sendEmail"
-                                checked={sendEmail}
-                                onChange={(e) =>
-                                  setSendEmail(e.target.checked)
-                                }
-                                className="rounded bg-slate-900 border-slate-600"
-                              />
-                              <label
-                                htmlFor="sendEmail"
-                                className="text-sm text-slate-300 cursor-pointer"
-                              >
-                                Also send via email
-                              </label>
-                            </div>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputField
+                      label="Full Name"
+                      editable={editing}
+                      value={formData.directorName}
+                      onChange={(e: any) =>
+                        setFormData({
+                          ...formData,
+                          directorName: e.target.value,
+                        })
+                      }
+                    />
+                    <InputField
+                      label="Matric Number"
+                      editable={editing}
+                      value={formData.matric}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, matric: e.target.value })
+                      }
+                    />
+                    <InputField
+                      label="Phone Number"
+                      editable={editing}
+                      value={formData.phone}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                    />
+                    <InputField
+                      label="Email Address"
+                      editable={editing}
+                      value={formData.email}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                    />
+                  </CardContent>
+                </Card>
 
-                            <Button
-                              onClick={handleSendAnnouncement}
-                              disabled={
-                                announcementLoading ||
-                                !announcementSubject ||
-                                !announcementMessage
-                              }
-                              className="w-full bg-blue-600 hover:bg-blue-700"
-                            >
-                              {announcementLoading
-                                ? "Sending..."
-                                : `Send to All Participants (${
-                                    event.participant_count || 0
-                                  })`}
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                {/* EVENT INFO */}
+                <Card className="bg-white/70 shadow">
+                  <CardHeader>
+                    <CardTitle>Event Information</CardTitle>
+                    <CardDescription>Complete event details</CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputField
+                      label="Event Title"
+                      editable={editing}
+                      value={formData.title}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      className="md:col-span-2"
+                    />
+
+                    <div className="md:col-span-2">
+                      <span className="text-sm font-medium text-slate-600">
+                        Description
+                      </span>
+                      {editing ? (
+                        <Textarea
+                          value={formData.description}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              description: e.target.value,
+                            })
+                          }
+                        />
+                      ) : (
+                        <p className="text-slate-700">{event.description}</p>
+                      )}
+                    </div>
+
+                    <InputField
+                      label="Cost (RM)"
+                      editable={editing}
+                      value={formData.cost}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, cost: e.target.value })
+                      }
+                      type="number"
+                    />
+                    <InputField
+                      label="Targeted Participants"
+                      editable={editing}
+                      value={formData.targetedParticipants}
+                      onChange={(e: any) =>
+                        setFormData({
+                          ...formData,
+                          targetedParticipants: e.target.value,
+                        })
+                      }
+                    />
+
+                    <FileField
+                      label="Paperwork"
+                      file={event.paperwork_url}
+                      editable={editing}
+                      onChange={(e: any) =>
+                        setNewPaperwork(e.target.files?.[0] || null)
+                      }
+                    />
+                    {editing && (
+                      <PosterField
+                        poster={event.poster_url}
+                        editable={editing}
+                        onChange={(e: any) =>
+                          setNewPoster(e.target.files?.[0] || null)
+                        }
+                      />
+                    )}
+
+                    <InputField
+                      label="Date From"
+                      type="date"
+                      editable={editing}
+                      value={formData.startDate}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, startDate: e.target.value })
+                      }
+                    />
+                    <InputField
+                      label="Date Until"
+                      type="date"
+                      editable={editing}
+                      value={formData.endDate}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, endDate: e.target.value })
+                      }
+                    />
+                    {/* TIME FIELDS */}
+                    <InputField
+                      label="Start Time"
+                      type="time"
+                      editable={editing}
+                      value={formData.startTime}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, startTime: e.target.value })
+                      }
+                    />
+                    <InputField
+                      label="End Time"
+                      type="time"
+                      editable={editing}
+                      value={formData.endTime}
+                      onChange={(e: any) =>
+                        setFormData({ ...formData, endTime: e.target.value })
+                      }
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* FOOTER BUTTONS */}
+                {isAdmin && (
+                  <div className="flex justify-between items-center mt-6 gap-4">
+                    {event.status !== "Completed" && (
+                      <Button
+                        className="px-6 py-2 bg-blue-600 text-white"
+                        onClick={() =>
+                          editing ? handleUpdate() : setEditing(true)
+                        }
+                        disabled={loading}
+                      >
+                        {loading
+                          ? "Saving..."
+                          : editing
+                          ? "Save Changes"
+                          : "Edit Event"}
+                      </Button>
                     )}
                     {event.status === "Completed" && (
-                      <Card className="bg-slate-800 border border-slate-600">
-                        <CardContent className="pt-6">
-                          <p className="text-center text-slate-400">
-                            Announcements cannot be sent for completed events.
-                          </p>
-                        </CardContent>
-                      </Card>
+                      <div className="text-sm text-slate-500 italic">
+                        Completed events cannot be edited
+                      </div>
                     )}
-                  </TabsContent>
-                )}
 
-                {/* ATTENDANCE TAB - ADMIN ONLY */}
-                {isAdmin && (
-                  <TabsContent value="attendance" className="space-y-6">
-                    {/* ATTENDANCE MANAGEMENT (ADMIN ONLY) */}
-                    <Card className="bg-slate-800 shadow-lg border border-slate-600">
+                    <div className="flex gap-3">
+                      <Button className="px-6 py-2 bg-slate-700 text-white">
+                        Generate Report
+                      </Button>
+
+                      <AlertDialog
+                        open={deleteDialogOpen}
+                        onOpenChange={setDeleteDialogOpen}
+                      >
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            className="px-6 py-2 gap-2"
+                            disabled={deleting}
+                          >
+                            <Trash2 size={18} />
+                            Delete Event
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Event</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{event?.title}"?
+                              {event?.status === "Completed" && (
+                                <span className="block mt-2 text-red-600 font-semibold">
+                                  Warning: This is a completed event. Deleting
+                                  it will permanently remove all historical
+                                  data, including attendance records and
+                                  participant information.
+                                </span>
+                              )}
+                              This action cannot be undone and will permanently
+                              remove the event, all registrations, and
+                              attendance records.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel disabled={deleting}>
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDeleteEvent}
+                              disabled={deleting}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              {deleting ? "Deleting..." : "Delete Event"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* REGISTERED USERS TAB */}
+              {isAdmin && (
+                <TabsContent value="users" className="space-y-6">
+                  <Card className="bg-white/70 shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users size={20} />
+                        Registered Participants
+                      </CardTitle>
+                      <CardDescription>
+                        Total: {participants.length} participant(s)
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {error && (
+                        <div className="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                          <p className="font-medium">
+                            Error loading participants
+                          </p>
+                          <p className="text-sm">{error}</p>
+                        </div>
+                      )}
+                      {loadingParticipants ? (
+                        <p className="text-center text-slate-500 py-8">
+                          Loading participants...
+                        </p>
+                      ) : participants.length === 0 ? (
+                        <div className="text-center py-8">
+                          <p className="text-slate-500 mb-4">
+                            No participants registered yet.
+                          </p>
+                          <Button
+                            onClick={handleViewParticipants}
+                            className="gap-2"
+                            disabled={loadingParticipants}
+                          >
+                            <Users size={18} />
+                            {loadingParticipants
+                              ? "Loading..."
+                              : "Load Participants"}
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center mb-4">
+                            <p className="text-sm text-slate-600">
+                              Showing {participants.length} participant(s)
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleViewParticipants}
+                            >
+                              <RefreshCw size={14} className="mr-2" />
+                              Refresh
+                            </Button>
+                          </div>
+                          <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                            {participants.map(
+                              (participant: any, index: number) => (
+                                <div
+                                  key={participant.id}
+                                  className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                  <div className="flex items-start justify-between">
+                                    <div className="space-y-1 flex-1">
+                                      <div className="flex items-center gap-3">
+                                        <span className="font-semibold text-slate-700">
+                                          #{index + 1}
+                                        </span>
+                                        <h4 className="font-semibold text-slate-900">
+                                          {participant.user.name}
+                                        </h4>
+                                        <span
+                                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                            participant.status === "registered"
+                                              ? "bg-green-100 text-green-700"
+                                              : participant.status ===
+                                                "attended"
+                                              ? "bg-blue-100 text-blue-700"
+                                              : "bg-slate-100 text-slate-600"
+                                          }`}
+                                        >
+                                          {participant.status}
+                                        </span>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm text-slate-600 mt-2">
+                                        <p>
+                                          <span className="font-medium">
+                                            Email:
+                                          </span>{" "}
+                                          {participant.user.email}
+                                        </p>
+                                        <p>
+                                          <span className="font-medium">
+                                            Matric:
+                                          </span>{" "}
+                                          {participant.user.matric_number}
+                                        </p>
+                                        <p>
+                                          <span className="font-medium">
+                                            Membership:
+                                          </span>{" "}
+                                          {participant.user.membership_number}
+                                        </p>
+                                        <p>
+                                          <span className="font-medium">
+                                            Faculty:
+                                          </span>{" "}
+                                          {participant.user.faculty}
+                                        </p>
+                                      </div>
+                                      <p className="text-xs text-slate-500 mt-2">
+                                        Registered on:{" "}
+                                        {new Date(
+                                          participant.registration_date
+                                        ).toLocaleString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              )}
+
+              {/* NOTIFICATIONS TAB */}
+              {isAdmin && (
+                <TabsContent value="notifications" className="space-y-6">
+                  {event.status !== "Completed" && (
+                    <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 shadow-lg border-blue-200">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-indigo-400">
+                        <CardTitle className="flex items-center gap-2 text-blue-900">
+                          <Bell size={20} />
+                          Send Announcement
+                        </CardTitle>
+                        <CardDescription className="text-blue-700">
+                          Send a notification to all registered participants
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {announcementResult && (
+                          <div
+                            className={`px-4 py-3 rounded-lg ${
+                              announcementResult.type === "success"
+                                ? "bg-green-50 border border-green-200 text-green-800"
+                                : "bg-red-50 border border-red-200 text-red-800"
+                            }`}
+                          >
+                            {announcementResult.text}
+                          </div>
+                        )}
+
+                        <div className="space-y-3">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                              Subject
+                            </label>
+                            <Input
+                              type="text"
+                              placeholder="Announcement subject..."
+                              value={announcementSubject}
+                              onChange={(e) =>
+                                setAnnouncementSubject(e.target.value)
+                              }
+                              className="w-full"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                              Message
+                            </label>
+                            <Textarea
+                              placeholder="Type your announcement message here..."
+                              value={announcementMessage}
+                              onChange={(e) =>
+                                setAnnouncementMessage(e.target.value)
+                              }
+                              rows={6}
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id="sendEmail"
+                              checked={sendEmail}
+                              onChange={(e) => setSendEmail(e.target.checked)}
+                              className="rounded"
+                            />
+                            <label
+                              htmlFor="sendEmail"
+                              className="text-sm text-slate-700 cursor-pointer"
+                            >
+                              Also send via email
+                            </label>
+                          </div>
+
+                          <Button
+                            onClick={handleSendAnnouncement}
+                            disabled={
+                              announcementLoading ||
+                              !announcementSubject ||
+                              !announcementMessage
+                            }
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                          >
+                            {announcementLoading
+                              ? "Sending..."
+                              : `Send to All Participants (${
+                                  event.participant_count || 0
+                                })`}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {event.status === "Completed" && (
+                    <Card className="bg-slate-50">
+                      <CardContent className="pt-6">
+                        <p className="text-center text-slate-500">
+                          Announcements cannot be sent for completed events.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </TabsContent>
+              )}
+
+              {/* ATTENDANCE TAB - ADMIN ONLY */}
+              {isAdmin && (
+                <TabsContent value="attendance" className="space-y-6">
+                  {/* ATTENDANCE MANAGEMENT (ADMIN ONLY) */}
+                  {isAdmin && (
+                    <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg border-indigo-200">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-indigo-900">
                           <CheckSquare size={20} />
                           Attendance Management
                         </CardTitle>
-                        <CardDescription className="text-slate-400">
+                        <CardDescription className="text-indigo-700">
                           Control attendance check-in for this event
                         </CardDescription>
                       </CardHeader>
@@ -2044,8 +1689,8 @@ export default function ViewEventPage() {
                           <div
                             className={`px-4 py-3 rounded-lg ${
                               attendanceMessage.type === "success"
-                                ? "bg-green-900/50 border border-green-700 text-green-300"
-                                : "bg-red-900/50 border border-red-700 text-red-300"
+                                ? "bg-green-50 border border-green-200 text-green-800"
+                                : "bg-red-50 border border-red-200 text-red-800"
                             }`}
                           >
                             {attendanceMessage.text}
@@ -2071,7 +1716,7 @@ export default function ViewEventPage() {
                               onClick={handleStopAttendance}
                               disabled={attendanceLoading}
                               variant="destructive"
-                              className="flex-1 gap-2 bg-red-600 hover:bg-red-700"
+                              className="flex-1 gap-2"
                             >
                               <StopCircle size={18} />
                               {attendanceLoading
@@ -2081,7 +1726,7 @@ export default function ViewEventPage() {
                           )}
 
                           {event.attendance_status === "Closed" && (
-                            <div className="flex-1 px-4 py-2 bg-slate-700 rounded-md text-center text-slate-300">
+                            <div className="flex-1 px-4 py-2 bg-slate-100 rounded-md text-center text-slate-600">
                               Attendance has been closed
                             </div>
                           )}
@@ -2090,23 +1735,21 @@ export default function ViewEventPage() {
                         {/* QR CODE & ATTENDANCE CODE DISPLAY */}
                         {event.attendance_status === "Active" &&
                           event.attendance_code && (
-                            <div className="grid md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-700">
+                            <div className="grid md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-indigo-200">
                               <div className="space-y-3">
-                                <h4 className="font-semibold text-indigo-400 flex items-center gap-2">
+                                <h4 className="font-semibold text-indigo-900 flex items-center gap-2">
                                   <QrCode size={18} />
                                   QR Code
                                 </h4>
-                                <div className="bg-slate-900 p-4 rounded-lg border-2 border-indigo-500/50 flex justify-center">
+                                <div className="bg-white p-4 rounded-lg border-2 border-indigo-300 flex justify-center">
                                   <div className="text-center">
                                     <QRCodeSVG
                                       value={`${window.location.origin}/attendance?code=${event.attendance_code}`}
                                       size={192}
                                       level="H"
                                       includeMargin={true}
-                                      fgColor="#ffffff" // White QR code foreground
-                                      bgColor="#0f172a" // Dark slate background (slate-900)
                                     />
-                                    <p className="text-xs text-slate-400 mt-2">
+                                    <p className="text-xs text-slate-500 mt-2">
                                       Scan to check in
                                     </p>
                                   </div>
@@ -2114,15 +1757,15 @@ export default function ViewEventPage() {
                               </div>
 
                               <div className="space-y-3">
-                                <h4 className="font-semibold text-indigo-400">
+                                <h4 className="font-semibold text-indigo-900">
                                   Attendance Code
                                 </h4>
-                                <div className="bg-slate-900 p-6 rounded-lg border-2 border-indigo-500/50">
-                                  <p className="text-4xl font-bold text-center tracking-wider text-indigo-400 font-mono">
+                                <div className="bg-white p-6 rounded-lg border-2 border-indigo-300">
+                                  <p className="text-4xl font-bold text-center tracking-wider text-indigo-600 font-mono">
                                     {event.attendance_code.substring(0, 4)}-
                                     {event.attendance_code.substring(4)}
                                   </p>
-                                  <p className="text-center text-sm text-slate-400 mt-3">
+                                  <p className="text-center text-sm text-slate-600 mt-3">
                                     Share this code with participants
                                   </p>
                                   <p className="text-center text-xs text-slate-500 mt-2">
@@ -2130,7 +1773,7 @@ export default function ViewEventPage() {
                                     <a
                                       href={`/check-in/${event.id}?code=${event.attendance_code}`}
                                       target="_blank"
-                                      className="text-blue-400 underline"
+                                      className="text-blue-600 underline"
                                     >
                                       /check-in/{event.id}
                                     </a>
@@ -2145,13 +1788,13 @@ export default function ViewEventPage() {
                           event.is_registered &&
                           event.attendance_status === "Active" &&
                           event.attendance_code && (
-                            <Card className="bg-slate-800 shadow-lg border border-slate-600 mt-6 pt-6 border-t">
+                            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg border-green-200">
                               <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-green-400">
+                                <CardTitle className="flex items-center gap-2 text-green-900">
                                   <CheckSquare size={20} />
                                   Check In to Event
                                 </CardTitle>
-                                <CardDescription className="text-green-500">
+                                <CardDescription className="text-green-700">
                                   Enter the attendance code to mark your
                                   attendance
                                 </CardDescription>
@@ -2159,7 +1802,7 @@ export default function ViewEventPage() {
                               <CardContent className="space-y-4">
                                 {hasCheckedIn ? (
                                   <div className="text-center py-6">
-                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-900/50 text-green-300 rounded-full font-semibold border border-green-700">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold">
                                       <CheckCircle size={20} />
                                       You have already checked in for this event
                                     </div>
@@ -2169,7 +1812,7 @@ export default function ViewEventPage() {
                                     <div className="space-y-3">
                                       <label
                                         htmlFor="checkInCode"
-                                        className="text-sm font-semibold text-green-400 block"
+                                        className="text-sm font-semibold text-green-900 block"
                                       >
                                         Attendance Code
                                       </label>
@@ -2183,15 +1826,14 @@ export default function ViewEventPage() {
                                             setCheckInCode(e.target.value)
                                           }
                                           maxLength={9}
-                                          // APPLY DARK INPUT STYLE
-                                          className="text-xl font-mono tracking-wider text-center h-12 text-green-400 bg-slate-900 border-slate-600 placeholder-green-600"
+                                          className="text-xl font-mono tracking-wider text-center h-12 text-green-700"
                                           onKeyPress={(e) => {
                                             if (e.key === "Enter")
                                               handleCheckIn();
                                           }}
                                         />
                                       </div>
-                                      <p className="text-xs text-green-500">
+                                      <p className="text-xs text-green-600">
                                         Enter the 8-digit code provided by the
                                         event organizer
                                       </p>
@@ -2201,8 +1843,8 @@ export default function ViewEventPage() {
                                       <div
                                         className={`px-4 py-3 rounded-lg border ${
                                           checkInMessage.type === "success"
-                                            ? "bg-green-900/50 border-green-700 text-green-300"
-                                            : "bg-red-900/50 border-red-700 text-red-300"
+                                            ? "bg-green-50 border-green-200 text-green-800"
+                                            : "bg-red-50 border-red-200 text-red-800"
                                         }`}
                                       >
                                         {checkInMessage.text}
@@ -2229,9 +1871,9 @@ export default function ViewEventPage() {
                         {/* LIVE ATTENDANCE LIST */}
                         {event.attendance_status === "Active" &&
                           showAttendanceList && (
-                            <div className="mt-6 pt-6 border-t border-slate-700">
+                            <div className="mt-6 pt-6 border-t border-indigo-200">
                               <div className="flex items-center justify-between mb-4">
-                                <h4 className="font-semibold text-indigo-400 flex items-center gap-2">
+                                <h4 className="font-semibold text-indigo-900 flex items-center gap-2">
                                   <Users size={18} />
                                   Live Attendance ({attendanceList.length})
                                 </h4>
@@ -2239,7 +1881,7 @@ export default function ViewEventPage() {
                                   size="sm"
                                   variant="outline"
                                   onClick={handleRefreshAttendance}
-                                  className="gap-2 bg-slate-900 border-slate-600 text-white hover:bg-slate-700"
+                                  className="gap-2"
                                 >
                                   <RefreshCw size={14} />
                                   Refresh
@@ -2247,7 +1889,7 @@ export default function ViewEventPage() {
                               </div>
 
                               {attendanceList.length === 0 ? (
-                                <p className="text-center text-slate-500 py-8 bg-slate-900 rounded-lg border border-slate-700">
+                                <p className="text-center text-slate-500 py-8 bg-white rounded-lg border border-indigo-200">
                                   No one has checked in yet
                                 </p>
                               ) : (
@@ -2256,24 +1898,24 @@ export default function ViewEventPage() {
                                     (record: any, index: number) => (
                                       <div
                                         key={record.id}
-                                        className="p-3 bg-slate-900 border border-slate-700 rounded-lg flex items-center justify-between hover:bg-slate-800 transition-colors"
+                                        className="p-3 bg-white border border-indigo-200 rounded-lg flex items-center justify-between hover:bg-indigo-50 transition-colors"
                                       >
                                         <div className="flex items-center gap-3">
                                           <span className="font-mono text-sm text-slate-500">
                                             #{index + 1}
                                           </span>
                                           <div>
-                                            <p className="font-semibold text-white">
+                                            <p className="font-semibold text-slate-900">
                                               {record.name}
                                             </p>
-                                            <p className="text-xs text-slate-400">
+                                            <p className="text-xs text-slate-600">
                                               {record.matric_number} •{" "}
                                               {record.method}
                                             </p>
                                           </div>
                                         </div>
                                         <div className="text-right">
-                                          <p className="text-xs text-slate-400">
+                                          <p className="text-xs text-slate-500">
                                             {new Date(
                                               record.marked_at
                                             ).toLocaleTimeString()}
@@ -2288,18 +1930,16 @@ export default function ViewEventPage() {
                           )}
                       </CardContent>
                     </Card>
-                  </TabsContent>
-                )}
-              </Tabs>
-            </>
+                  )}
+                </TabsContent>
+              )}
+            </Tabs>
           )}
         </main>
       </div>
     </div>
   );
 }
-
-/* --- HELPER COMPONENTS --- */
 
 function InputField({
   label,
@@ -2310,10 +1950,10 @@ function InputField({
   className = "",
 }: any) {
   const handleDateChange = (e: any) => {
-    const v = e.target.value;
+    const value = e.target.value;
     // Validate year is 4 digits for date inputs
-    if (type === "date" && v) {
-      const year = new Date(v).getFullYear();
+    if (type === "date" && value) {
+      const year = new Date(value).getFullYear();
       if (year.toString().length !== 4) {
         return; // Don't update if year is not 4 digits
       }
@@ -2321,31 +1961,19 @@ function InputField({
     onChange(e);
   };
 
-  const isDateOrTime = type === "date" || type === "time";
-
   return (
     <div className={className}>
-      <span className="text-sm font-medium text-slate-300">{label}</span>
+      <span className="text-sm font-medium text-slate-600">{label}</span>
       {editable ? (
-        // APPLY DARK INPUT STYLE
         <Input
           type={type}
           value={value}
           onChange={type === "date" ? handleDateChange : onChange}
           min={type === "date" ? "1000-01-01" : undefined}
           max={type === "date" ? "9999-12-31" : undefined}
-          className={`mt-1 bg-slate-900 border-slate-600 text-white placeholder-slate-500 ${
-            isDateOrTime ? "input-white-icon" : ""
-          }`}
         />
       ) : (
-        <div className="mt-1 px-3 py-2 rounded-md bg-slate-900/70 border border-slate-700 text-sm text-slate-100 min-h-[44px] flex items-center">
-          {value && value !== ""
-            ? value
-            : type === "number"
-            ? "—"
-            : "Not specified"}
-        </div>
+        <p className="text-slate-700">{value}</p>
       )}
     </div>
   );
@@ -2408,25 +2036,20 @@ function FileField({ label, file, editable, onChange }: any) {
 
   return (
     <div>
-      <span className="text-sm font-medium text-slate-300">{label}</span>
+      <span className="text-sm font-medium text-slate-600">{label}</span>
 
       {editable ? (
-        // APPLY DARK INPUT STYLE
-        <Input
-          type="file"
-          className="mt-2 bg-slate-900 border-slate-600 text-white"
-          onChange={onChange}
-        />
+        <Input type="file" className="mt-2" onChange={onChange} />
       ) : file ? (
         <button
           onClick={handleDownload}
           disabled={downloading}
-          className="text-blue-400 underline text-sm block mt-2 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-blue-600 underline text-sm block mt-1 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {downloading ? "Downloading..." : "Download File"}
         </button>
       ) : (
-        <p className="text-slate-500 text-sm mt-2">No file uploaded</p>
+        <p className="text-slate-500 text-sm mt-1">No file uploaded</p>
       )}
     </div>
   );
@@ -2499,21 +2122,20 @@ function PosterField({ poster, editable, onChange }: any) {
 
   return (
     <div>
-      <span className="text-sm font-medium text-slate-300">Poster</span>
+      <span className="text-sm font-medium text-slate-600">Poster</span>
 
       {editable ? (
-        // APPLY DARK INPUT STYLE
         <Input
           type="file"
           accept="image/*"
-          className="mt-2 bg-slate-900 border-slate-600 text-white"
+          className="mt-2"
           onChange={onChange}
         />
       ) : imageUrl && !imageError ? (
         <img
           src={imageUrl}
           alt="Event Poster"
-          className="w-full max-w-sm h-auto object-cover rounded-md border mt-2 border-slate-600"
+          className="w-full max-w-sm h-auto object-cover rounded-md border mt-2"
           onError={(e) => {
             console.error("Failed to display poster image");
             setImageError(true);
@@ -2529,144 +2151,18 @@ function PosterField({ poster, editable, onChange }: any) {
   );
 }
 
-
-type SidebarButtonVariant = "default" | "destructive";
-
-interface SidebarButtonProps {
-  icon: React.ReactNode;
-  label: string;
-  open: boolean;
-  active?: boolean;               // optional now
-  onClick?: () => void;
-  variant?: SidebarButtonVariant; // optional now
-}
-
-function SidebarButton({
-  icon,
-  label,
-  open,
-  active = false,
-  onClick,
-  variant = "default",
-}: SidebarButtonProps) {
-  const baseClasses =
-    "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-colors duration-200 font-medium";
-
-  const activeClasses = active
-    ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg"
-    : variant === "destructive"
-    ? "text-rose-300 hover:bg-rose-900/30"
-    : "text-slate-300 hover:bg-gray-800 hover:text-white";
-
+function SidebarButton({ icon, label, open, active, onClick }: any) {
   return (
-    <button onClick={onClick} className={`${baseClasses} ${activeClasses}`}>
-      <div className={`w-6 h-6 flex items-center justify-center transition-transform ${active ? 'scale-100' : 'scale-90'}`}>{icon}</div>
-      {open && <span className="truncate">{label}</span>}
-      {open && active && <ChevronRight size={16} className="ml-auto text-white/70" />}
-    </button>
-  );
-}
-
-
-/* Modal - same auth-aware fetch logic as before */
-function ImageModal({
-  imageUrl,
-  onClose,
-}: {
-  imageUrl: string;
-  onClose: () => void;
-}) {
-  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(false);
-
-  useEffect(() => {
-    let url = "";
-    if (imageUrl.startsWith("http")) {
-      url = imageUrl;
-    } else if (imageUrl.startsWith("/api/v1")) {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-      const baseUrl = apiUrl.replace("/api/v1", "");
-      url = `${baseUrl}${imageUrl}`;
-    } else {
-      url = getFileUrl(imageUrl);
-    }
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      setLoading(true);
-      fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch modal image");
-          return res.blob();
-        })
-        .then((blob) => {
-          const obj = URL.createObjectURL(blob);
-          setModalImageUrl(obj);
-          setErr(false);
-        })
-        .catch((e) => {
-          console.error(e);
-          setErr(true);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setModalImageUrl(url);
-      setLoading(false);
-    }
-
-    return () => {
-      if (modalImageUrl && modalImageUrl.startsWith("blob:"))
-        URL.revokeObjectURL(modalImageUrl);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUrl]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-
-  return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70"
-      onClick={onClose}
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm ${
+        active
+          ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white"
+          : "text-slate-300 hover:bg-white/10 hover:text-white"
+      }`}
     >
-      <button
-        onClick={onClose}
-        className="absolute top-5 right-5 z-50 p-2 bg-white/90 rounded-full shadow"
-        aria-label="close"
-      ></button>
-
-      <div
-        className="relative w-[90vw] h-[90vh]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {loading ? (
-          <div className="w-full h-full flex items-center justify-center text-white">
-            Loading image...
-          </div>
-        ) : err || !modalImageUrl ? (
-          <div className="w-full h-full flex items-center justify-center text-white">
-            Failed to load image
-          </div>
-        ) : (
-          <img
-            src={modalImageUrl}
-            alt="Event poster"
-            className="w-full h-full object-contain rounded"
-          />
-        )}
-      </div>
-    </div>
+      <div className="w-6 h-6 flex items-center justify-center">{icon}</div>
+      {open && <span>{label}</span>}
+    </button>
   );
 }
