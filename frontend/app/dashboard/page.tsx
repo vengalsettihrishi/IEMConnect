@@ -513,7 +513,7 @@ export default function DashboardPage() {
                               <TableCell className="text-sm text-slate-300">{u.email}</TableCell>
                               <TableCell className="text-white">{u.membership_number}</TableCell>
                               <TableCell className="text-slate-300">
-                                {new Date(u.createdAt).toLocaleDateString()}
+                                {new Date(u.createdAt).toLocaleDateString('en-GB')}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Button
@@ -663,7 +663,7 @@ function QuickActionButton({ icon, label, onClick, variant }: { icon: React.Reac
 }
 
 function UpcomingEventCard({ event, router }: { event: Event; router: any }) {
-    const date = new Date(event.start_date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const date = new Date(event.start_date).toLocaleDateString("en-GB", { month: "short", day: "numeric" });
     const time = event.start_time ? event.start_time.substring(0, 5) : "TBD";
     const isRegistered = event.is_registered;
 
@@ -831,7 +831,7 @@ const SimpleMonthView: React.FC<{ events: Event[]; onDateClick: (date: Date, dat
                     className="bg-gray-800 text-white p-3 rounded-lg shadow-2xl pointer-events-none min-w-[200px] max-w-[300px]"
                 >
                     <h4 className="font-bold text-sm mb-1 border-b border-gray-600 pb-1">
-                        Events on {parseDate(hoveredEvents[0].start_date).toLocaleDateString('default', { month: 'short', day: 'numeric' })}
+                        Events on {parseDate(hoveredEvents[0].start_date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                     </h4>
                     <ul className="list-disc list-inside space-y-1">
                         {hoveredEvents.map(event => (

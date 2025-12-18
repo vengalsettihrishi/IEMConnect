@@ -241,7 +241,7 @@ export default function ReportsPage() {
           cumulativeRegistrations += registrationTimeline[date] || 0;
           cumulativeAttendance += attendanceTimeline[date] || 0;
           return {
-            date: new Date(date).toLocaleDateString("en-US", {
+            date: new Date(date).toLocaleDateString("en-GB", {
               month: "short",
               day: "numeric",
             }),
@@ -1309,12 +1309,12 @@ export default function ReportsPage() {
                       <CardDescription className="text-base text-slate-400 mt-1">
                         {new Date(
                           eventStats.event.start_date
-                        ).toLocaleDateString()}{" "}
+                        ).toLocaleDateString('en-GB')}{" "}
                         {eventStats.event.end_date !==
                           eventStats.event.start_date &&
                           ` - ${new Date(
                             eventStats.event.end_date
-                          ).toLocaleDateString()}`}
+                          ).toLocaleDateString('en-GB')}`}
                       </CardDescription>
                     </CardHeader>
                   </Card>
@@ -1621,7 +1621,7 @@ export default function ReportsPage() {
                                       {p.registration_date
                                         ? new Date(
                                             p.registration_date
-                                          ).toLocaleDateString()
+                                          ).toLocaleDateString('en-GB')
                                         : "-"}
                                     </TableCell>
                                     <TableCell>

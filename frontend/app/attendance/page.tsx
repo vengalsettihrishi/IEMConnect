@@ -353,7 +353,7 @@ export default function AttendancePage() {
                       <p className="font-semibold text-white">
                         {new Date(
                           attendanceResult.event.date
-                        ).toLocaleDateString()}
+                        ).toLocaleDateString('en-GB')}
                       </p>
                     </div>
                     <div className="text-left">
@@ -487,11 +487,11 @@ export default function AttendancePage() {
                           <div className="flex items-center gap-2 text-slate-400">
                             <Calendar size={16} />
                             <span>
-                              {new Date(event.start_date).toLocaleDateString()}
+                              {new Date(event.start_date).toLocaleDateString('en-GB')}
                               {event.end_date !== event.start_date &&
                                 ` - ${new Date(
                                   event.end_date
-                                ).toLocaleDateString()}`}
+                                ).toLocaleDateString('en-GB')}`}
                             </span>
                           </div>
                           {event.start_time && (
