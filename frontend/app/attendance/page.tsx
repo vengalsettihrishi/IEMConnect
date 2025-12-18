@@ -509,7 +509,7 @@ export default function AttendancePage() {
                               Attended:{" "}
                               {new Date(
                                 event.attendance.marked_at
-                              ).toLocaleString()}
+                              ).toLocaleString('en-GB')}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-slate-400">

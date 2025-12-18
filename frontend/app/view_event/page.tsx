@@ -1903,7 +1903,7 @@ export default function ViewEventPage() {
                                           Registered on:{" "}
                                           {new Date(
                                             participant.registration_date
-                                          ).toLocaleString()}
+                                          ).toLocaleString('en-GB')}
                                         </p>
                                       </div>
                                     </div>

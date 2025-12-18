@@ -411,7 +411,7 @@ export default function ReportsPage() {
             a.user?.name || "",
             a.event?.title || "-",
             a.method || "-",
-            new Date(a.timestamp).toLocaleString(),
+            new Date(a.timestamp).toLocaleString('en-GB'),
           ]),
         ];
         const activitySheet = XLSX.utils.aoa_to_sheet(activitySheetData);
@@ -475,10 +475,10 @@ export default function ReportsPage() {
             p.user.faculty || "",
             p.status,
             p.registration_date
-              ? new Date(p.registration_date).toLocaleString()
+              ? new Date(p.registration_date).toLocaleString('en-GB')
               : "",
             p.attendance_date
-              ? new Date(p.attendance_date).toLocaleString()
+              ? new Date(p.attendance_date).toLocaleString('en-GB')
               : "",
             p.method || "",
           ]),
@@ -1141,7 +1141,7 @@ export default function ReportsPage() {
                                     {a.method ?? "-"}
                                   </TableCell>
                                   <TableCell className="text-xs text-slate-400">
-                                    {new Date(a.timestamp).toLocaleString()}
+                                    {new Date(a.timestamp).toLocaleString('en-GB')}
                                   </TableCell>
                                 </TableRow>
                               ))
@@ -1630,7 +1630,7 @@ export default function ReportsPage() {
                                           <div className="text-xs text-slate-300">
                                             {new Date(
                                               p.attendance_date
-                                            ).toLocaleString()}
+                                            ).toLocaleString('en-GB')}
                                           </div>
                                           {p.method && (
                                             <div className="text-xs text-slate-500">
