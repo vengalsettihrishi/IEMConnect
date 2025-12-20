@@ -45,7 +45,9 @@ import {
   PieChart as PieChartIcon,
   FileText,
   ChevronRight,
+  ChevronLeft,
   UserCheck,
+  X,
 } from "lucide-react";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -273,7 +275,7 @@ export default function AttendancePage() {
         </header>
 
         {/* Content */}
-        <main className="px-8 py-10 max-w-7xl mx-auto">
+        <main className="px-8 py-10">
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 mb-6 bg-slate-800 border border-slate-700">
@@ -292,110 +294,209 @@ export default function AttendancePage() {
             </TabsList>
 
             {/* Give Attendance Tab */}
-            <TabsContent value="give-attendance">
-              <div className="max-w-2xl mx-auto">
-                <Card className="shadow-2xl border-2 border-slate-700 bg-slate-800">
-                  <CardHeader className="bg-indigo-700 text-white rounded-t-lg border-b border-indigo-600">
-                    <CardTitle className="flex items-center gap-2 text-2xl">
-                      <QrCode size={28} />
-                      Check In
-                    </CardTitle>
-                    <CardDescription className="text-white/70">
-                      Welcome, {user?.name}
-                    </CardDescription>
-                  </CardHeader>
+            <TabsContent value="give-attendance" className="space-y-8">
+              {/* Check-in Form and Statistics Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Side - Check In Form */}
+                <div>
+                  <Card className="shadow-2xl border-2 border-slate-700 bg-slate-800">
+                    <CardHeader className="bg-indigo-700 text-white rounded-t-lg border-b border-indigo-600">
+                      <CardTitle className="flex items-center gap-2 text-2xl">
+                        <QrCode size={28} />
+                        Check In
+                      </CardTitle>
+                      <CardDescription className="text-white/70">
+                        Welcome, {user?.name}
+                      </CardDescription>
+                    </CardHeader>
 
-                  <CardContent className="p-6 space-y-6">
-                    {attendanceResult ? (
-                      <div className="text-center space-y-4">
-                        <div className="w-20 h-20 mx-auto bg-green-900/50 rounded-full flex items-center justify-center border-4 border-green-500">
-                          <CheckCircle size={40} className="text-green-400" />
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-bold text-green-400">Check-in Successful!</h3>
-                          <p className="text-slate-400 mt-1">
-                            You have been marked present for:
-                          </p>
-                          <p className="text-xl font-semibold text-white mt-2">
-                            {attendanceResult.event.title}
-                          </p>
-                          <p className="text-sm text-slate-400 mt-1">
-                            {new Date(attendanceResult.attendance.marked_at).toLocaleString()}
-                          </p>
-                        </div>
-                        <Button
-                          onClick={handleReset}
-                          className="bg-indigo-600 hover:bg-indigo-700"
-                        >
-                          Check In Again
-                        </Button>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex gap-4 justify-center">
-                          <div className="flex flex-col items-center gap-2 p-4 bg-slate-700 rounded-lg border border-slate-600">
-                            <div className="w-12 h-12 bg-indigo-900/50 rounded-full flex items-center justify-center">
-                              <QrCode className="text-indigo-400" size={24} />
-                            </div>
-                            <span className="text-sm text-slate-300">Scan QR</span>
+                    <CardContent className="p-6 space-y-6">
+                      {attendanceResult ? (
+                        <div className="text-center space-y-4">
+                          <div className="w-20 h-20 mx-auto bg-green-900/50 rounded-full flex items-center justify-center border-4 border-green-500">
+                            <CheckCircle size={40} className="text-green-400" />
                           </div>
-                          <div className="flex items-center text-slate-500">or</div>
-                          <div className="flex flex-col items-center gap-2 p-4 bg-slate-700 rounded-lg border border-slate-600">
-                            <div className="w-12 h-12 bg-purple-900/50 rounded-full flex items-center justify-center">
-                              <Keyboard className="text-purple-400" size={24} />
-                            </div>
-                            <span className="text-sm text-slate-300">Enter Code</span>
+                          <div>
+                            <h3 className="text-2xl font-bold text-green-400">Check-in Successful!</h3>
+                            <p className="text-slate-400 mt-1">
+                              You have been marked present for:
+                            </p>
+                            <p className="text-xl font-semibold text-white mt-2">
+                              {attendanceResult.event.title}
+                            </p>
+                            <p className="text-sm text-slate-400 mt-1">
+                              {new Date(attendanceResult.attendance.marked_at).toLocaleString()}
+                            </p>
                           </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-slate-300 mb-2">
-                            Attendance Code
-                          </label>
-                          <Input
-                            value={code}
-                            onChange={(e) => setCode(e.target.value.toUpperCase())}
-                            placeholder="Enter 8-character code"
-                            maxLength={8}
-                            className="text-center text-2xl font-mono tracking-widest bg-slate-700 border-slate-600 text-white placeholder-slate-500"
-                          />
-                        </div>
-
-                        {message && (
-                          <div
-                            className={`p-4 rounded-lg ${
-                              message.type === "error"
-                                ? "bg-red-900/50 border border-red-700 text-red-300"
-                                : "bg-green-900/50 border border-green-700 text-green-300"
-                            }`}
+                          <Button
+                            onClick={handleReset}
+                            className="bg-indigo-600 hover:bg-indigo-700"
                           >
-                            {message.text}
+                            Check In Again
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex gap-4 justify-center">
+                            <div className="flex flex-col items-center gap-2 p-4 bg-slate-700 rounded-lg border border-slate-600">
+                              <div className="w-12 h-12 bg-indigo-900/50 rounded-full flex items-center justify-center">
+                                <QrCode className="text-indigo-400" size={24} />
+                              </div>
+                              <span className="text-sm text-slate-300">Scan QR</span>
+                            </div>
+                            <div className="flex items-center text-slate-500">or</div>
+                            <div className="flex flex-col items-center gap-2 p-4 bg-slate-700 rounded-lg border border-slate-600">
+                              <div className="w-12 h-12 bg-purple-900/50 rounded-full flex items-center justify-center">
+                                <Keyboard className="text-purple-400" size={24} />
+                              </div>
+                              <span className="text-sm text-slate-300">Enter Code</span>
+                            </div>
                           </div>
-                        )}
 
-                        <Button
-                          onClick={handleSubmitCode}
-                          disabled={loading || code.length !== 8}
-                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-lg py-6"
-                        >
-                          {loading ? (
-                            <>
-                              <RefreshCw size={20} className="mr-2 animate-spin" />
-                              Checking In...
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle size={20} className="mr-2" />
-                              Check In
-                            </>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                              Attendance Code
+                            </label>
+                            <Input
+                              value={code}
+                              onChange={(e) => setCode(e.target.value.toUpperCase())}
+                              placeholder="Enter 8-character code"
+                              maxLength={8}
+                              className="text-center text-2xl font-mono tracking-widest bg-slate-700 border-slate-600 text-white placeholder-slate-500"
+                            />
+                          </div>
+
+                          {message && (
+                            <div
+                              className={`p-4 rounded-lg ${
+                                message.type === "error"
+                                  ? "bg-red-900/50 border border-red-700 text-red-300"
+                                  : "bg-green-900/50 border border-green-700 text-green-300"
+                              }`}
+                            >
+                              {message.text}
+                            </div>
                           )}
-                        </Button>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
+
+                          <Button
+                            onClick={handleSubmitCode}
+                            disabled={loading || code.length !== 8}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-lg py-6"
+                          >
+                            {loading ? (
+                              <>
+                                <RefreshCw size={20} className="mr-2 animate-spin" />
+                                Checking In...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle size={20} className="mr-2" />
+                                Check In
+                              </>
+                            )}
+                          </Button>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Right Side - Statistics */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-white mb-4">Event Statistics</h3>
+                  
+                  {/* Registered Events */}
+                  <Card className="bg-gradient-to-br from-blue-900/50 to-blue-800/50 border-blue-700 shadow-lg hover:shadow-blue-500/20 transition-all">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-blue-300 text-sm font-medium">Registered Events</p>
+                          <p className="text-4xl font-bold text-white mt-2">5</p>
+                        </div>
+                        <div className="w-14 h-14 bg-blue-500/20 rounded-full flex items-center justify-center">
+                          <Calendar className="text-blue-200" size={28} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Attended Events */}
+                  <Card className="bg-gradient-to-br from-green-900/50 to-green-800/50 border-green-700 shadow-lg hover:shadow-green-500/20 transition-all">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-green-300 text-sm font-medium">Attended Events</p>
+                          <p className="text-4xl font-bold text-white mt-2">3</p>
+                        </div>
+                        <div className="w-14 h-14 bg-green-500/20 rounded-full flex items-center justify-center">
+                          <CheckCircle className="text-green-200" size={28} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Not Attended Events */}
+                  <Card className="bg-gradient-to-br from-red-900/50 to-red-800/50 border-red-700 shadow-lg hover:shadow-red-500/20 transition-all">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-red-300 text-sm font-medium">Not Attended</p>
+                          <p className="text-4xl font-bold text-white mt-2">2</p>
+                        </div>
+                        <div className="w-14 h-14 bg-red-500/20 rounded-full flex items-center justify-center">
+                          <X className="text-red-200" size={28} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
-            </TabsContent>
+
+              {/* Registered Events Section - Full Width */}
+              <div className="w-full">
+                <h3 className="text-xl font-bold text-white mb-4">Recent Registered Event</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    {[
+                      { image: "/activity1.jpeg", title: "Registered Event", status: "Attended", description: "Tech Workshop 2024" },
+                      { image: "/activity2.png", title: "Registered Event", status: "Not Attended", description: "Annual Sports Day" },
+                      { image: "/activity3.jpg", title: "Registered Event", status: "Attended", description: "Cultural Fest" },
+                      { image: "/activity4.jpg", title: "Registered Event", status: "Not Attended", description: "Coding Competition" },
+                      { image: "/activity5.jpg", title: "Registered Event", status: "Attended", description: "Guest Lecture Series" },
+                    ].map((event, index) => (
+                      <Card key={index} className="bg-slate-800 border-slate-700 overflow-hidden hover:border-slate-600 transition-all hover:scale-105 shadow-xl">
+                        <div className="relative h-48">
+                          <img
+                            src={event.image}
+                            alt={event.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                          
+                          {/* Status Badge */}
+                          <div className="absolute top-3 right-3">
+                            {event.status === "Attended" ? (
+                              <Badge className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-1.5 text-sm font-bold shadow-lg shadow-emerald-500/50 flex items-center gap-1.5">
+                                <CheckCircle size={14} />
+                                Attended
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-gradient-to-r from-red-500 to-rose-500 text-white px-3 py-1.5 text-sm font-bold shadow-lg shadow-red-500/50 flex items-center gap-1.5">
+                                <X size={14} />
+                                Not Attended
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Title and Description */}
+                          <div className="absolute bottom-3 left-3 right-3">
+                            <p className="text-white font-bold text-lg drop-shadow-lg">{event.description}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
 
             {/* Attended Events Tab */}
             <TabsContent value="attended">

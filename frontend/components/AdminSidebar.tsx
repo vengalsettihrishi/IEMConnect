@@ -15,6 +15,7 @@ import {
   ChevronRight,
   UserCheck,
   MessageSquare,
+  Award,
 } from "lucide-react";
 
 export type ActivePage =
@@ -24,6 +25,7 @@ export type ActivePage =
   | "feedback"
   | "events"
   | "attendance"
+  | "certificates"
   | "settings"
   | "help";
 
@@ -143,6 +145,15 @@ export default function AdminSidebar({ activePage }: AdminSidebarProps) {
           label="Attendance"
           onClick={() => router.push("/attendance")}
           active={activePage === "attendance"}
+        />
+
+        {/* Certificates */}
+        <SidebarButton
+          open={sidebarOpen}
+          icon={<Award size={20} />}
+          label="Certificates"
+          onClick={() => router.push("/certificate")}
+          active={activePage === "certificates"}
         />
 
         {/* Settings */}
