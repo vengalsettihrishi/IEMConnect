@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { getUnverifiedUsers, verifyUser } from "@/lib/admin-api";
-import { getEvents, Event } from "@/lib/event-api";
+import { getEvents, Event } from "@/lib/event-api"; 
 import {
   Table,
   TableBody,
@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/table";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import EventCalendar from "@/components/EventCalendar";
 
 import {
   Menu,
@@ -32,35 +31,60 @@ import {
   FileText,
   Calendar,
   CheckSquare,
-  Bell,
   Settings,
   HelpCircle,
   PieChart as PieChartIcon,
   TrendingUp,
   Clock,
   CheckCircle2,
+  ChevronRight, 
+  UserCheck, 
+  UserPlus, 
+  ChevronLeft, 
 } from "lucide-react";
-import React from "react";
-import NotificationBell from "@/components/NotificationBell";
+
+import NotificationBell from "@/components/NotificationBell"; 
 import UserAvatar from "@/components/UserAvatar";
+import AdminSidebar from "@/components/AdminSidebar";
+import QuickActionButton from "@/components/QuickActionButton";
+import UpcomingEventCard from "@/components/UpcomingEventCard";
+import SimpleMonthView from "@/components/SimpleMonthView";
+import React from "react";
+
+
+/* --- START: TYPE DEFINITIONS --- */
 
 interface UnverifiedUser {
-  id: number;
+  id: number; 
   name: string;
   email: string;
   membership_number: string;
   createdAt: string;
 }
 
+interface DashboardUser {
+  id: string; 
+  name: string;
+  email: string;
+  role: 'member' | 'admin';
+  membership_number: string;
+  matric_number?: string; 
+  faculty?: string;       
+}
+
+/* --- END: TYPE DEFINITIONS --- */
+
+
 export default function DashboardPage() {
+  const { user: authUser, token, logout } = useAuth();
   const router = useRouter();
-  const { user, token, logout } = useAuth();
+  const user = authUser as DashboardUser;
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showApprovalPanel, setShowApprovalPanel] = useState(false);
   const [unverifiedUsers, setUnverifiedUsers] = useState<UnverifiedUser[]>([]);
   const [loading, setLoading] = useState(false);
-  const [approvalLoading, setApprovalLoading] = useState<number | null>(null);
+  const [approvalLoading, setApprovalLoading] = useState<number | null>(null); 
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -68,17 +92,17 @@ export default function DashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
 
+  // --- Core Backend Logic (Preserved) ---
   useEffect(() => {
     if (!token) router.push("/login");
   }, [token, router]);
 
-  // Fetch events for stats and calendar
   useEffect(() => {
     const fetchEvents = async () => {
       if (!token) return;
       try {
         setEventsLoading(true);
-        const data = await getEvents();
+        const data = await getEvents(); 
         setEvents(data);
       } catch (error) {
         console.error("Failed to fetch events:", error);
@@ -91,7 +115,6 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     await logout();
-    // Logout function handles redirect internally
   };
 
   const fetchUnverifiedUsers = async () => {
@@ -116,7 +139,7 @@ export default function DashboardPage() {
       const res = await verifyUser(id);
 
       setMessage({ type: "success", text: res.message });
-      setUnverifiedUsers((prev) => prev.filter((u) => u.id !== id));
+      setUnverifiedUsers((prev) => prev.filter((u) => u.id !== id)); 
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -132,6 +155,7 @@ export default function DashboardPage() {
     setShowApprovalPanel(open);
     if (open && user?.role === "admin") fetchUnverifiedUsers();
   };
+  // --- End Core Backend Logic ---
 
   const isAdmin = user?.role === "admin";
 
@@ -142,17 +166,10 @@ export default function DashboardPage() {
   ).length;
   const registeredEvents = events.filter((e) => e.is_registered === true).length;
   const completedEvents = events.filter((e) => e.status === "Completed").length;
-
-  // Admin stats
   const pendingApprovals = unverifiedUsers.length;
-  const totalParticipants = events.reduce(
-    (sum, e) => sum + (e.participant_count || 0),
-    0
-  );
 
   const handleCalendarDateClick = (date: Date, dateEvents: Event[]) => {
     if (dateEvents.length > 0) {
-      // Navigate to the first event
       router.push(`/view_event?id=${dateEvents[0].id}`);
     }
   };
@@ -160,314 +177,186 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-[#F3F6FB] text-slate-900">
-      {/* SIDEBAR */}
-      <aside
-        className={`transition-all duration-300 ${
-          sidebarOpen ? "w-72" : "w-20"
-        } bg-[#071129] text-white shadow-xl`}
-      >
-        {/* sidebar header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div
-              className={`bg-white/90 backdrop-blur-sm rounded-xl border border-white/40 shadow-md flex items-center justify-center ${
-                sidebarOpen ? "w-14 h-14" : "w-12 h-12"
-              }`}
-            >
-              <img
-                src="/iem-logo.jpg"
-                alt="IEM UTM Logo"
-                className={`object-contain ${
-                  sidebarOpen ? "w-10 h-10" : "w-8 h-8"
-                }`}
-              />
-            </div>
-
-            {sidebarOpen && (
-              <div>
-                <div className="text-sm font-semibold">IEM Connect</div>
-                <div className="text-xs text-slate-300">
-                  {isAdmin ? "Admin Panel" : "Member Portal"}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <button
-            onClick={() => setSidebarOpen((s) => !s)}
-            className="p-2 text-slate-200 rounded hover:bg-white/10"
-          >
-            <Menu size={18} />
-          </button>
-        </div>
-
-        {/* menu */}
-        <nav className="px-3 py-6 space-y-2">
-          <SidebarButton
-            open={sidebarOpen}
-            icon={<PieChartIcon size={18} />}
-            label="Dashboard"
-            onClick={() => router.push("/dashboard")}
-            active
-          />
-          {isAdmin && (
-            <SidebarButton
-              open={sidebarOpen}
-              icon={<FileText size={18} />}
-              label="Analytics"
-              onClick={() => router.push("/admin/reports")}
-            />
-          )}
-          <SidebarButton
-            open={sidebarOpen}
-            icon={<Calendar size={18} />}
-            label="Events"
-            onClick={() => router.push("/event")} //
-          />
-          <SidebarButton
-            open={sidebarOpen}
-            icon={<CheckSquare size={18} />}
-            label="Attendance"
-            onClick={() => router.push("/attendance")}
-          />
-          <SidebarButton
-            open={sidebarOpen}
-            icon={<Settings size={18} />}
-            label="Settings"
-            onClick={() => router.push("/settings")}
-          />
-          <SidebarButton
-            open={sidebarOpen}
-            icon={<HelpCircle size={18} />}
-            label="Help"
-            onClick={() => router.push("/admin/help")} //
-          />
-
-          <div className="mt-6 border-t border-white/10 pt-4">
-            <SidebarButton
-              open={sidebarOpen}
-              icon={<LogOut size={18} />}
-              label="Logout"
-              onClick={handleLogout}
-            />
-          </div>
-        </nav>
-      </aside>
+    <div className="flex min-h-screen bg-slate-900 text-slate-100">
+      {/* SIDEBAR - Now using shared AdminSidebar component */}
+      <AdminSidebar activePage="dashboard" />
 
       {/* MAIN AREA */}
       <div className="flex-1 min-h-screen">
-        {/* top header */}
-        <header className="flex items-center justify-between px-8 py-4 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <header className="flex items-center justify-between px-8 py-4 sticky top-0 z-40 bg-white/10 backdrop-blur-xl shadow-lg border-b border-white/20">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Dashboard</h2>
-            <p className="text-sm text-slate-500">Welcome back, {user.name}.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Dashboard</h2>
+            <p className="text-sm text-slate-300">Welcome back, {user.name}.</p>
           </div>
 
           <div className="flex items-center gap-5">
-            {/* Notification Bell */}
+            {/* Notification Bell (Assuming it handles dark/light contrast internally) */}
             <NotificationBell />
 
-            {/* User Name + Role */}
-            <div className="text-right">
-              <div className="text-sm font-semibold">{user.name}</div>
-              <div className="text-xs text-slate-400 capitalize">
-                {user.role}
+            {/* Admin Approval Quick Access */}
+            {isAdmin && pendingApprovals > 0 && (
+                <Button 
+                  onClick={toggleApprovalPanel} 
+                  variant="default" 
+                  size="sm" 
+                  className="relative bg-red-600 hover:bg-red-700 shadow-md transition-all text-white"
+                >
+                  <UserCheck size={16} className="mr-2" />
+                  {pendingApprovals} Approvals
+                </Button>
+            )}
+
+            {/* User Info & Profile Link */}
+            <div className="flex items-center gap-3">
+              <div className="text-right hidden sm:block">
+                <div className="text-sm font-semibold text-white">{user.name}</div>
+                <div className="text-xs text-slate-400 capitalize">
+                  {user.role}
+                </div>
               </div>
+
+              <button
+                onClick={() => router.push("/profile")}
+                className="rounded-full overflow-hidden border-2 border-transparent shadow hover:ring-2 hover:ring-indigo-500 transition-all cursor-pointer"
+                title="View Profile"
+              >
+                <UserAvatar size="md" />
+              </button>
+
+              <button className="p-2 rounded-lg hover:bg-white/10 text-white" onClick={handleLogout}>
+                <LogOut size={18} />
+              </button>
             </div>
-
-            {/* Profile Picture - Clickable */}
-            <button
-              onClick={() => router.push("/profile")}
-              className="rounded-full overflow-hidden border border-slate-300 shadow-sm hover:border-blue-500 transition-colors cursor-pointer"
-              title="View Profile"
-            >
-              <UserAvatar size="md" />
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="p-2 rounded hover:bg-slate-200"
-            >
-              <LogOut size={18} />
-            </button>
           </div>
         </header>
 
         {/* content */}
-        <main className="px-8 py-10 space-y-8 max-w-7xl mx-auto">
-          {/* STATS CARDS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <main className="px-8 py-10 space-y-10 max-w-7xl mx-auto">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatsCard
               title="Total Events"
               value={totalEvents}
-              icon={<Calendar className="h-5 w-5" />}
-              description="All events"
+              icon={<Calendar className="h-6 w-6" />}
+              description="Total events available"
               loading={eventsLoading}
+              color="blue"
             />
             <StatsCard
-              title="Upcoming Events"
+              title="Upcoming"
               value={upcomingEvents}
-              icon={<Clock className="h-5 w-5" />}
-              description="Events coming soon"
+              icon={<Clock className="h-6 w-6" />}
+              description="Events currently open"
               loading={eventsLoading}
+              color="amber"
             />
             <StatsCard
               title="My Registrations"
               value={registeredEvents}
-              icon={<CheckCircle2 className="h-5 w-5" />}
-              description="Events you're registered for"
+              icon={<CheckCircle2 className="h-6 w-6" />}
+              description="Active event registrations"
               loading={eventsLoading}
+              color="emerald"
             />
             {isAdmin ? (
               <StatsCard
                 title="Pending Approvals"
                 value={pendingApprovals}
-                icon={<Users className="h-5 w-5" />}
-                description="Users awaiting verification"
-                loading={false}
+                icon={<UserPlus size={20} />}
+                description="New users awaiting verification"
+                loading={loading}
+                color="red"
               />
             ) : (
               <StatsCard
-                title="Completed"
+                title="Completed Events"
                 value={completedEvents}
-                icon={<TrendingUp className="h-5 w-5" />}
-                description="Past events"
+                icon={<TrendingUp size={20} />}
+                description="Past events attended"
                 loading={eventsLoading}
+                color="violet"
               />
             )}
           </div>
 
           {/* MAIN CONTENT GRID */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* LEFT COLUMN - Calendar */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* CALENDAR VIEW */}
-              <Card className="bg-white/70 shadow">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* LEFT COLUMN - Calendar & Profile */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* CALENDAR VIEW (Dark card body) */}
+              <Card className="bg-slate-700 shadow-xl border border-slate-600 rounded-xl h-full flex flex-col">
                 <CardHeader>
-                  <CardTitle>Event Calendar</CardTitle>
-                  <CardDescription>
-                    Click on a date to view events
+                  <CardTitle className="text-xl font-bold text-indigo-400">Event Calendar</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Visual summary of scheduled events. Click on a date to view details.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 pb-8">
                   {eventsLoading ? (
-                    <div className="flex items-center justify-center h-64">
-                      <p className="text-slate-500">Loading calendar...</p>
+                    <div className="flex items-center justify-center h-96 text-slate-500 bg-slate-800 border border-dashed rounded-xl">
+                      Loading calendar data...
                     </div>
                   ) : (
-                    <EventCalendar
+                    <SimpleMonthView
                       events={events}
                       onDateClick={handleCalendarDateClick}
                     />
                   )}
                 </CardContent>
               </Card>
-
-              {/* PROFILE CARD */}
-              <Card className="bg-white/70 shadow">
-                <CardHeader>
-                  <CardTitle>Profile Overview</CardTitle>
-                  <CardDescription>
-                    Your authenticated profile details
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <Info label="Full Name" value={user.name} />
-                  <Info label="Email" value={user.email} />
-                  <Info
-                    label="Role"
-                    value={
-                      <span className="flex items-center gap-2 capitalize">
-                        {user.role} {user.role === "admin" && <Badge>Admin</Badge>}
-                      </span>
-                    }
-                  />
-                  <Info label="Membership Number" value={user.membership_number} />
-                  <Info label="Matric Number" value={user.matric_number} />
-                  <Info label="Faculty" value={user.faculty} />
-                </CardContent>
-              </Card>
             </div>
 
             {/* RIGHT COLUMN - Quick Actions & Recent Events */}
-            <div className="space-y-6">
-              {/* QUICK ACTIONS */}
-              <Card className="bg-white/70 shadow">
+            <div className="space-y-8">
+              {/* QUICK ACTIONS (Dark card body) */}
+              <Card className="bg-slate-700 shadow-xl border border-slate-600 rounded-xl">
                 <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+                  <CardTitle className="text-lg font-bold text-indigo-400">Quick Actions</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
+                <CardContent className="space-y-3">
+                  <QuickActionButton
+                    icon={<Calendar className="h-5 w-5" />}
+                    label="Browse Events"
                     onClick={() => router.push("/event")}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Browse Events
-                  </Button>
+                  />
                   {isAdmin && (
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
+                    <QuickActionButton
+                      icon={<FileText className="h-5 w-5" />}
+                      label="Create New Event"
                       onClick={() => router.push("/create_event")}
-                    >
-                      <FileText className="mr-2 h-4 w-4" />
-                      Create Event
-                    </Button>
+                    />
                   )}
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
+                  <QuickActionButton
+                    icon={<CheckSquare className="h-5 w-5" />}
+                    label="View Attendance"
                     onClick={() => router.push("/attendance")}
-                  >
-                    <CheckSquare className="mr-2 h-4 w-4" />
-                    View Attendance
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
+                  />
+                  <QuickActionButton
+                    icon={<Settings className="h-5 w-5" />}
+                    label="Manage Settings"
                     onClick={() => router.push("/settings")}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Button>
+                  />
                 </CardContent>
               </Card>
 
-              {/* UPCOMING EVENTS */}
-              <Card className="bg-white/70 shadow">
+              {/* UPCOMING EVENTS (Dark card body) */}
+              <Card className="bg-slate-700 shadow-xl border border-slate-600 rounded-xl">
                 <CardHeader>
-                  <CardTitle>Upcoming Events</CardTitle>
-                  <CardDescription>Your next events</CardDescription>
+                  <CardTitle className="text-lg font-bold text-indigo-400">Upcoming Events</CardTitle>
+                  <CardDescription className="text-slate-400">Your next 5 scheduled activities</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {eventsLoading ? (
-                    <p className="text-slate-500 text-sm">Loading...</p>
+                    <p className="text-slate-500 text-sm py-4 text-center">Loading event schedule...</p>
                   ) : upcomingEvents === 0 ? (
-                    <p className="text-slate-500 text-sm">No upcoming events</p>
+                    <p className="text-slate-500 text-sm py-4 text-center">No upcoming events scheduled.</p>
                   ) : (
                     <div className="space-y-3">
                       {events
                         .filter((e) => e.status === "Upcoming" || e.status === "Open")
                         .slice(0, 5)
                         .map((event) => (
-                          <button
-                            key={event.id}
-                            onClick={() => router.push(`/view_event?id=${event.id}`)}
-                            className="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
-                          >
-                            <div className="font-medium text-sm">{event.title}</div>
-                            <div className="text-xs text-slate-500 mt-1">
-                              {new Date(event.start_date).toLocaleDateString()}
-                              {event.start_time && ` at ${event.start_time}`}
-                            </div>
-                            {event.is_registered && (
-                              <Badge variant="secondary" className="mt-2 text-xs">
-                                Registered
-                              </Badge>
-                            )}
-                          </button>
+                          <UpcomingEventCard key={event.id} event={event} router={router} />
                         ))}
                     </div>
                   )}
@@ -476,82 +365,86 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ADMIN PANEL */}
+          {/* ADMIN PANEL (Dark card body) */}
           {user.role === "admin" && (
-            <Card className="bg-white/70 shadow">
-              <CardHeader>
+            <Card className="bg-slate-700 shadow-xl border border-slate-600 rounded-xl">
+              {/* FIX: Conditional Border Logic Added Here */}
+              <CardHeader className={showApprovalPanel ? "border-b border-slate-600" : ""}>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle>Admin Panel</CardTitle>
-                    <CardDescription>
-                      Approve new user registrations
+                    <CardTitle className="flex items-center gap-2 text-blue-400"><UserCheck size={20} /> Admin Panel</CardTitle>
+                    <CardDescription className="text-slate-400">
+                      Review and verify new user registrations.
                     </CardDescription>
                   </div>
-                  <Button onClick={toggleApprovalPanel} variant="secondary">
-                    {showApprovalPanel ? "Hide Approvals" : "Show Approvals"}
+                  <Button 
+                    onClick={toggleApprovalPanel} 
+                    variant={showApprovalPanel ? "secondary" : "default"} 
+                    className={pendingApprovals > 0 && !showApprovalPanel ? "bg-red-600 hover:bg-red-700 text-white" : "text-indigo-400 border-indigo-400 hover:bg-slate-800"}
+                  >
+                    {showApprovalPanel ? "Hide Approvals" : `Show Approvals (${pendingApprovals})`}
                   </Button>
                 </div>
               </CardHeader>
 
               {showApprovalPanel && (
-                <CardContent className="mt-4" id="approvals-panel">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Pending User Approvals
-                  </h3>
+                <CardContent className="mt-4 p-6" id="approvals-panel">
 
                   {message && (
                     <Alert
-                      className="mb-4"
-                      variant={
-                        message.type === "error" ? "destructive" : "default"
-                      }
+                      className="mb-4 rounded-lg bg-slate-800 text-white"
+                      variant={message.type === "error" ? "destructive" : "default"}
                     >
-                      <AlertTitle>
+                      <AlertTitle className="font-bold">
                         {message.type === "error" ? "Error" : "Success"}
                       </AlertTitle>
-                      <AlertDescription>{message.text}</AlertDescription>
+                      <AlertDescription className="text-sm text-slate-300">**{message.text}**</AlertDescription>
                     </Alert>
                   )}
 
                   {loading ? (
                     <p className="text-slate-500">Loading users...</p>
                   ) : unverifiedUsers.length === 0 ? (
-                    <div className="text-slate-500">No pending users.</div>
+                    <div className="text-slate-500 text-center py-4 border border-dashed rounded-lg bg-slate-800">All users verified. No pending registrations.</div>
                   ) : (
-                    <Table className="border rounded-md overflow-hidden">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Membership No.</TableHead>
-                          <TableHead>Registered</TableHead>
-                          <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {unverifiedUsers.map((u) => (
-                          <TableRow key={u.id}>
-                            <TableCell>{u.name}</TableCell>
-                            <TableCell>{u.email}</TableCell>
-                            <TableCell>{u.membership_number}</TableCell>
-                            <TableCell>
-                              {new Date(u.createdAt).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                size="sm"
-                                disabled={approvalLoading === u.id}
-                                onClick={() => handleApproveUser(u.id)}
-                              >
-                                {approvalLoading === u.id
-                                  ? "Verifying..."
-                                  : "Verify"}
-                              </Button>
-                            </TableCell>
+                    /* FIX: Added Fixed Height Scroll Container for Admin Table */
+                    <div className="border rounded-lg overflow-hidden max-h-[400px] overflow-y-auto">
+                      <Table>
+                        <TableHeader className="bg-slate-800 sticky top-0 z-10">
+                          <TableRow>
+                            <TableHead className="font-bold text-slate-300">Name</TableHead>
+                            <TableHead className="font-bold text-slate-300">Email</TableHead>
+                            <TableHead className="font-bold text-slate-300">Membership No.</TableHead>
+                            <TableHead className="font-bold text-slate-300">Registered</TableHead>
+                            <TableHead className="font-bold text-slate-300 text-right">Action</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody className="bg-slate-700">
+                          {unverifiedUsers.map((u) => (
+                            <TableRow key={u.id} className="hover:bg-slate-600">
+                              <TableCell className="font-medium text-white">{u.name}</TableCell>
+                              <TableCell className="text-sm text-slate-300">{u.email}</TableCell>
+                              <TableCell className="text-white">{u.membership_number}</TableCell>
+                              <TableCell className="text-slate-300">
+                                {new Date(u.createdAt).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  size="sm"
+                                  disabled={approvalLoading === u.id}
+                                  onClick={() => handleApproveUser(u.id)}
+                                  className="bg-emerald-600 hover:bg-emerald-700 shadow-md text-white"
+                                >
+                                  {approvalLoading === u.id
+                                    ? "Verifying..."
+                                    : "Verify"}
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   )}
                 </CardContent>
               )}
@@ -563,13 +456,14 @@ export default function DashboardPage() {
   );
 }
 
-/* COMPONENTS */
+/* --- ENHANCED COMPONENTS --- */
 
 function Info({ label, value }: { label: string; value: any }) {
+  // FIX: Info box background changed to slate-800
   return (
-    <div>
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="text-lg font-medium">{value}</p>
+    <div className="p-5 border border-slate-600 rounded-lg bg-slate-800 shadow-sm min-w-0">
+      <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider whitespace-normal">{label}</p>
+      <p className="text-base font-medium text-white mt-1 whitespace-normal break-all">{value || "N/A"}</p>
     </div>
   );
 }
@@ -580,25 +474,51 @@ function StatsCard({
   icon,
   description,
   loading,
+  color = "blue",
 }: {
   title: string;
   value: number;
   icon: React.ReactNode;
   description: string;
   loading?: boolean;
+  color?: "blue" | "amber" | "emerald" | "red" | "violet";
 }) {
+  const iconColor = {
+    blue: "text-blue-400",
+    amber: "text-amber-400",
+    emerald: "text-emerald-400",
+    red: "text-red-400",
+    violet: "text-violet-400",
+  }[color];
+  const borderColor = {
+    blue: "border-indigo-500",
+    amber: "border-yellow-500",
+    emerald: "border-emerald-500",
+    red: "border-red-500",
+    violet: "border-violet-500",
+  }[color];
+  const bgColor = {
+      blue: "bg-blue-900/40", // Darker icon backgrounds
+      amber: "bg-amber-900/40",
+      emerald: "bg-emerald-900/40",
+      red: "bg-red-900/40",
+      violet: "bg-violet-900/40",
+  }[color];
+
   return (
-    <Card className="bg-white/70 shadow">
+    <Card className={`bg-slate-700 shadow-lg transition-all duration-300 hover:shadow-xl border-t-4 ${borderColor} rounded-xl`}>
       <CardContent className="p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-600">{title}</p>
-            <p className="text-3xl font-bold mt-2">
+            <p className="text-sm font-semibold text-slate-300">{title}</p>
+            <p className="text-4xl font-extrabold mt-1 text-white">
               {loading ? "..." : value}
             </p>
-            <p className="text-xs text-slate-500 mt-1">{description}</p>
+            <p className="text-xs text-slate-400 mt-1">{description}</p>
           </div>
-          <div className="text-blue-500">{icon}</div>
+          <div className={`p-3 rounded-xl ${iconColor} ${bgColor}`}>
+            {icon}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -611,24 +531,26 @@ function SidebarButton({
   open,
   active,
   onClick,
+  variant,
 }: {
   icon: React.ReactNode;
   label: string;
   open: boolean;
   active?: boolean;
   onClick?: () => void;
+  variant?: 'default' | 'destructive';
 }) {
+  const baseClasses = "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-colors duration-200 font-medium";
+  const activeClasses = active ? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg" : variant === 'destructive' ? "text-rose-300 hover:bg-rose-900/30" : "text-slate-300 hover:bg-gray-800 hover:text-white";
+
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors duration-150 ${
-        active
-          ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow"
-          : "text-slate-300 hover:bg-white/10 hover:text-white"
-      }`}
+      className={`${baseClasses} ${activeClasses}`}
     >
-      <div className="w-6 h-6 flex items-center justify-center">{icon}</div>
+      <div className={`w-6 h-6 flex items-center justify-center transition-transform ${active ? 'scale-100' : 'scale-90'}`}>{icon}</div>
       {open && <span className="truncate">{label}</span>}
+      {open && active && <ChevronRight size={16} className="ml-auto text-white/70" />}
     </button>
   );
 }
