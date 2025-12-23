@@ -275,7 +275,7 @@ export default function AdminAttendancePage() {
                           {event.title}
                         </h3>
                         <p className="text-xs text-slate-500 mb-2">
-                          {new Date(event.start_date).toLocaleDateString('en-GB')}
+                          {new Date(event.start_date).toLocaleDateString()}
                         </p>
                         <div className="flex items-center gap-2">
                           <span
@@ -318,7 +318,7 @@ export default function AdminAttendancePage() {
                       {selectedEvent.title}
                     </CardTitle>
                     <CardDescription className="text-indigo-100">
-                      {new Date(selectedEvent.start_date).toLocaleDateString('en-GB')}{" "}
+                      {new Date(selectedEvent.start_date).toLocaleDateString()}{" "}
                       • {selectedEvent.participant_count || 0} registered
                     </CardDescription>
                   </CardHeader>

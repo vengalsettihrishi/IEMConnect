@@ -242,7 +242,7 @@ export default function ReportsPage() {
           cumulativeRegistrations += registrationTimeline[date] || 0;
           cumulativeAttendance += attendanceTimeline[date] || 0;
           return {
-            date: new Date(date).toLocaleDateString("en-GB", {
+            date: new Date(date).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
             }),
@@ -412,7 +412,7 @@ export default function ReportsPage() {
             a.user?.name || "",
             a.event?.title || "-",
             a.method || "-",
-            new Date(a.timestamp).toLocaleString('en-GB'),
+            new Date(a.timestamp).toLocaleString(),
           ]),
         ];
         const activitySheet = XLSX.utils.aoa_to_sheet(activitySheetData);
@@ -476,10 +476,10 @@ export default function ReportsPage() {
             p.user.faculty || "",
             p.status,
             p.registration_date
-              ? new Date(p.registration_date).toLocaleString('en-GB')
+              ? new Date(p.registration_date).toLocaleString()
               : "",
             p.attendance_date
-              ? new Date(p.attendance_date).toLocaleString('en-GB')
+              ? new Date(p.attendance_date).toLocaleString()
               : "",
             p.method || "",
           ]),
@@ -1052,7 +1052,7 @@ export default function ReportsPage() {
                                     {a.method ?? "-"}
                                   </TableCell>
                                   <TableCell className="text-xs text-slate-400">
-                                    {new Date(a.timestamp).toLocaleString('en-GB')}
+                                    {new Date(a.timestamp).toLocaleString()}
                                   </TableCell>
                                 </TableRow>
                               ))
@@ -1220,12 +1220,12 @@ export default function ReportsPage() {
                       <CardDescription className="text-base text-slate-400 mt-1">
                         {new Date(
                           eventStats.event.start_date
-                        ).toLocaleDateString('en-GB')}{" "}
+                        ).toLocaleDateString()}{" "}
                         {eventStats.event.end_date !==
                           eventStats.event.start_date &&
                           ` - ${new Date(
                             eventStats.event.end_date
-                          ).toLocaleDateString('en-GB')}`}
+                          ).toLocaleDateString()}`}
                       </CardDescription>
                     </CardHeader>
                   </Card>
@@ -1532,7 +1532,7 @@ export default function ReportsPage() {
                                       {p.registration_date
                                         ? new Date(
                                             p.registration_date
-                                          ).toLocaleDateString('en-GB')
+                                          ).toLocaleDateString()
                                         : "-"}
                                     </TableCell>
                                     <TableCell>
@@ -1541,7 +1541,7 @@ export default function ReportsPage() {
                                           <div className="text-xs text-slate-300">
                                             {new Date(
                                               p.attendance_date
-                                            ).toLocaleString('en-GB')}
+                                            ).toLocaleString()}
                                           </div>
                                           {p.method && (
                                             <div className="text-xs text-slate-500">
