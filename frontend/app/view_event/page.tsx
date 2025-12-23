@@ -934,11 +934,11 @@ export default function ViewEventPage() {
                             <p>
                               {new Date(
                                 event.start_date
-                              ).toLocaleDateString('en-GB')}
+                              ).toLocaleDateString()}
                               {event.end_date !== event.start_date &&
                                 ` - ${new Date(
                                   event.end_date
-                                ).toLocaleDateString('en-GB')}`}
+                                ).toLocaleDateString()}`}
                             </p>
                             {(event.start_time || event.end_time) && (
                               <p className="text-xs text-slate-400">
@@ -1176,11 +1176,11 @@ export default function ViewEventPage() {
                                     <strong>Date:</strong>{" "}
                                     {new Date(
                                       event.start_date
-                                    ).toLocaleDateString('en-GB')}
+                                    ).toLocaleDateString()}
                                     {event.end_date !== event.start_date &&
                                       ` - ${new Date(
                                         event.end_date
-                                      ).toLocaleDateString('en-GB')}`}
+                                      ).toLocaleDateString()}`}
                                   </p>
                                   {event.start_time && (
                                     <p>
@@ -1903,7 +1903,7 @@ export default function ViewEventPage() {
                                           Registered on:{" "}
                                           {new Date(
                                             participant.registration_date
-                                          ).toLocaleString('en-GB')}
+                                          ).toLocaleString()}
                                         </p>
                                       </div>
                                     </div>
