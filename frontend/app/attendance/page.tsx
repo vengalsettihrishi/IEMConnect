@@ -348,6 +348,30 @@ export default function AttendancePage() {
                           </div>
                         </div>
 
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-600">
+                    <div className="text-left">
+                      <p className="text-xs text-slate-400 mb-1 flex items-center gap-1">
+                        <Calendar size={14} />
+                        Date
+                      </p>
+                      <p className="font-semibold text-white">
+                        {new Date(
+                          attendanceResult.event.date
+                        ).toLocaleDateString('en-GB')}
+                      </p>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs text-slate-400 mb-1 flex items-center gap-1">
+                        <Clock size={14} />
+                        Check-in Time
+                      </p>
+                      <p className="font-semibold text-white">
+                        {new Date(
+                          attendanceResult.attendance.marked_at
+                        ).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">
                             Attendance Code
@@ -426,6 +450,76 @@ export default function AttendancePage() {
                     <p className="text-slate-500 text-sm mt-1">
                       Check in to events to see them here
                     </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {attendedEvents.map((event) => (
+                    <Card
+                      key={event.id}
+                      className="shadow-lg hover:shadow-xl transition-shadow cursor-pointer bg-slate-800 border border-slate-700"
+                      onClick={() => router.push(`/view_event?id=${event.id}`)}
+                    >
+                      {event.poster_url && (
+                        <div className="relative h-48 overflow-hidden rounded-t-lg bg-slate-700">
+                          <AttendedEventPoster posterUrl={event.poster_url} />
+                        </div>
+                      )}
+                      <CardHeader>
+                        <div className="flex items-start justify-between gap-2">
+                          <CardTitle className="text-lg line-clamp-2 text-white">
+                            {event.title}
+                          </CardTitle>
+                          <Badge
+                            className={`shrink-0 ${
+                              event.status === "Completed"
+                                ? "bg-slate-600 text-slate-300 border-slate-500"
+                                : event.status === "Open"
+                                ? "bg-green-900/50 text-green-300 border-green-700"
+                                : "bg-yellow-900/50 text-yellow-300 border-yellow-700"
+                            }`}
+                          >
+                            {event.status}
+                          </Badge>
+                        </div>
+                        <CardDescription className="line-clamp-2 text-slate-400">
+                          {event.description || "No description available"}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2 text-slate-400">
+                            <Calendar size={16} />
+                            <span>
+                              {new Date(event.start_date).toLocaleDateString('en-GB')}
+                              {event.end_date !== event.start_date &&
+                                ` - ${new Date(
+                                  event.end_date
+                                ).toLocaleDateString('en-GB')}`}
+                            </span>
+                          </div>
+                          {event.start_time && (
+                            <div className="flex items-center gap-2 text-slate-400">
+                              <Clock size={16} />
+                              <span>
+                                {event.start_time}
+                                {event.end_time && ` - ${event.end_time}`}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 text-slate-300">
+                            <CheckCircle size={16} className="text-green-400" />
+                            <span>
+                              Attended:{" "}
+                              {new Date(
+                                event.attendance.marked_at
+                              ).toLocaleString('en-GB')}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-slate-400">
+                            <span className="text-xs font-medium px-2 py-1 bg-blue-800 text-blue-300 rounded border border-blue-700">
+                              {event.attendance.method}
+                            </span>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

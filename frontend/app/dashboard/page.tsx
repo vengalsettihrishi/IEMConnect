@@ -426,7 +426,7 @@ export default function DashboardPage() {
                               <TableCell className="text-sm text-slate-300">{u.email}</TableCell>
                               <TableCell className="text-white">{u.membership_number}</TableCell>
                               <TableCell className="text-slate-300">
-                                {new Date(u.createdAt).toLocaleDateString()}
+                                {new Date(u.createdAt).toLocaleDateString('en-GB')}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Button
@@ -554,3 +554,280 @@ function SidebarButton({
     </button>
   );
 }
+
+function QuickActionButton({ icon, label, onClick, variant }: { icon: React.ReactNode; label: string; onClick: () => void; variant?: 'primary' | 'secondary' }) {
+    const isPrimary = variant === 'primary';
+    
+    // FIX: Ensures default state is dark/outline, and hover state applies primary colors.
+    const classes = isPrimary 
+        ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md" 
+        : "bg-slate-800 text-slate-300 border border-slate-600 hover:bg-indigo-900 hover:text-indigo-400 hover:border-indigo-500 transition-all shadow-sm"; 
+
+    return (
+        <Button
+            variant="outline"
+            className={`w-full justify-start font-semibold rounded-lg ${classes}`}
+            onClick={onClick}
+        >
+            <span className="mr-2">{icon}</span>
+            {label}
+        </Button>
+    );
+}
+
+function UpcomingEventCard({ event, router }: { event: Event; router: any }) {
+    const date = new Date(event.start_date).toLocaleDateString("en-GB", { month: "short", day: "numeric" });
+    const time = event.start_time ? event.start_time.substring(0, 5) : "TBD";
+    const isRegistered = event.is_registered;
+
+    return (
+        <button
+            onClick={() => router.push(`/view_event?id=${event.id}`)}
+            className={`w-full text-left p-4 rounded-xl border transition-all flex items-center gap-4 
+              ${isRegistered ? 'bg-emerald-900/40 border-emerald-700 hover:bg-emerald-900/50' : 'bg-amber-900/40 border-amber-700 hover:bg-amber-900/50'}`
+            }
+        >
+            <div className={`flex flex-col items-center justify-center flex-shrink-0 w-12 h-12 rounded-lg shadow-sm 
+              ${isRegistered ? 'bg-emerald-600 text-white' : 'bg-amber-600 text-white'}`
+            }>
+                <span className="text-xs font-bold">{date.split(' ')[0]}</span>
+                <span className="text-base font-extrabold -mt-1">{date.split(' ')[1]}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="font-semibold text-base text-white truncate">{event.title}</div>
+                <div className="text-xs text-slate-400 mt-0.5">
+                    {time} | {isRegistered ? <Badge className="bg-emerald-500 text-white shadow-sm">Registered</Badge> : <Badge className="bg-amber-500 text-white shadow-sm">Not Registered</Badge>}
+                </div>
+            </div>
+            <ChevronRight size={18} className="text-slate-400 group-hover:text-indigo-400 flex-shrink-0" />
+        </button>
+    );
+}
+
+
+/* --- SIMPLE MONTH VIEW CALENDAR COMPONENT --- */
+
+// Helper to correctly parse dates from ISO string without time zone conversion issue
+const parseDate = (dateString: string): Date => {
+    const parts = dateString.split('-');
+    return new Date(Date.UTC(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])));
+};
+
+
+const SimpleMonthView: React.FC<{ events: Event[]; onDateClick: (date: Date, dateEvents: Event[]) => void }> = ({ events, onDateClick }) => {
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentMonth, currentYear] = [currentDate.getMonth(), currentDate.getFullYear()];
+    const [hoveredEvents, setHoveredEvents] = useState<Event[] | null>(null);
+    const [hoverPosition, setHoverPosition] = useState<{ top: number, left: number }>({ top: 0, left: 0 });
+
+    const eventsMap = useMemo(() => {
+        const map = new Map<string, { events: Event[], isRegistered: boolean }>();
+        events.forEach(event => {
+            const dateKey = parseDate(event.start_date).toISOString().split('T')[0]; 
+            
+            let entry = map.get(dateKey) || { events: [], isRegistered: false };
+            entry.events.push(event);
+            
+            // Determine if ANY event on this day is registered by the user
+            if (event.is_registered) {
+                entry.isRegistered = true;
+            } 
+
+            map.set(dateKey, entry);
+        });
+        return map;
+    }, [events]);
+
+    const daysInMonth = useMemo(() => {
+        const date = parseDate(`${currentYear}-${currentMonth + 1}-01`); 
+        const days = [];
+        const firstDayOfWeek = date.getUTCDay(); 
+        
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            days.push({ day: null, date: null, dateKey: null, eventType: 'none', isToday: false });
+        }
+
+        let currentDay = 1;
+        let tempDate = parseDate(`${currentYear}-${currentMonth + 1}-${currentDay}`);
+        
+        while (tempDate.getUTCMonth() === currentMonth) {
+            const dayNum = tempDate.getUTCDate();
+            const dateKey = tempDate.toISOString().split('T')[0];
+            
+            const today = new Date();
+            const todayKey = parseDate(`${today.getUTCFullYear()}-${today.getUTCMonth() + 1}-${today.getUTCDate()}`).toISOString().split('T')[0];
+            const isToday = dateKey === todayKey;
+
+            const eventData = eventsMap.get(dateKey);
+            let eventType: 'registered' | 'open' | 'none' = 'none';
+
+            if (eventData) {
+                if (eventData.isRegistered) {
+                    eventType = 'registered';
+                } else if (eventData.events.length > 0) {
+                    eventType = 'open'; // Events exist, but user is not registered for any
+                }
+            }
+
+            days.push({ day: dayNum, date: new Date(tempDate), dateKey, eventType, isToday });
+            
+            tempDate.setUTCDate(tempDate.getUTCDate() + 1);
+        }
+
+        return days;
+    }, [currentMonth, currentYear, eventsMap]);
+
+    const changeMonth = (delta: number) => {
+        setCurrentDate(prev => {
+            const newDate = new Date(prev);
+            newDate.setMonth(prev.getMonth() + delta);
+            return newDate;
+        });
+    };
+
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    // --- Hover Handlers ---
+    const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>, dayObj: typeof daysInMonth[number]) => {
+        if (dayObj.eventType !== 'none') {
+            const dayEvents = eventsMap.get(dayObj.dateKey!)?.events || [];
+            setHoveredEvents(dayEvents);
+            
+            // Set hover position slightly below the button
+            const rect = e.currentTarget.getBoundingClientRect();
+            // Positioning the tooltip relative to the center of the calendar section
+            const calendarRect = e.currentTarget.closest('.calendar-container')?.getBoundingClientRect() || { left: 0, width: 0 };
+            
+            setHoverPosition({ 
+                top: rect.bottom + 10, 
+                left: calendarRect.left + (calendarRect.width / 2) 
+            });
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredEvents(null);
+    };
+    
+    // --- Legend Component ---
+    const CalendarLegend = () => (
+        <div className="flex justify-center items-center space-x-6 text-xs text-slate-400 mt-8 px-1 mx-auto">
+            <div className="flex items-center gap-1">
+                <span className="w-3 h-3 rounded-full bg-indigo-600 border border-indigo-700 shadow-sm"></span>
+                <span>Today</span>
+            </div>
+            <div className="flex items-center gap-1">
+                <span className="w-3 h-3 rounded-full bg-emerald-50 border border-emerald-300 shadow-sm"></span>
+                <span>Registered</span>
+            </div>
+            <div className="flex items-center gap-1">
+                <span className="w-3 h-3 rounded-full bg-amber-50 border border-amber-300 shadow-sm"></span>
+                <span>Open/Not Registered</span>
+            </div>
+        </div>
+    );
+
+    return (
+
+        <div className="p-4 bg-slate-800 rounded-lg relative calendar-container">
+            
+            {/* Event Tooltip (Modal-like behavior on hover) */}
+            {hoveredEvents && hoveredEvents.length > 0 && (
+                <div
+                    style={{ 
+                        position: 'fixed', 
+                        top: hoverPosition.top,
+                        left: hoverPosition.left,
+                        transform: 'translateX(-50%)', 
+                        zIndex: 50,
+                    }}
+                    className="bg-gray-800 text-white p-3 rounded-lg shadow-2xl pointer-events-none min-w-[200px] max-w-[300px]"
+                >
+                    <h4 className="font-bold text-sm mb-1 border-b border-gray-600 pb-1">
+                        Events on {parseDate(hoveredEvents[0].start_date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
+                    </h4>
+                    <ul className="list-disc list-inside space-y-1">
+                        {hoveredEvents.map(event => (
+                            <li key={event.id} className="text-xs">
+                                **{event.title}** ({event.start_time || 'TBD'})
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            
+            {/* Header: Month and Navigation */}
+            <div className="flex items-center justify-between mb-6">
+                <Button variant="ghost" size="icon" onClick={() => changeMonth(-1)} className="text-slate-300 hover:bg-slate-700">
+                    <ChevronLeft size={20} />
+                </Button>
+                <h3 className="text-xl font-extrabold text-white">
+                    {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </h3>
+                <Button variant="ghost" size="icon" onClick={() => changeMonth(1)} className="text-slate-300 hover:bg-slate-700">
+                    <ChevronRight size={20} />
+                </Button>
+            </div>
+
+            
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-2 text-center text-sm">
+                {/* Day Names */}
+                {daysOfWeek.map(day => (
+                    <div key={day} className="font-semibold text-indigo-400 pt-1 pb-2 uppercase text-xs tracking-wider">
+                        {day}
+                    </div>
+                ))}
+
+                {/* Days */}
+                {daysInMonth.map((dayObj, index) => {
+                    const isRegisteredDay = dayObj.eventType === 'registered';
+                    const isOpenDay = dayObj.eventType === 'open';
+
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => {
+                                if (dayObj.date) {
+                                    const dayEvents = eventsMap.get(dayObj.dateKey!)?.events || [];
+                                    onDateClick(dayObj.date, dayEvents);
+                                }
+                            }}
+                            onMouseEnter={(e) => handleMouseEnter(e, dayObj)}
+                            onMouseLeave={handleMouseLeave}
+                            disabled={!dayObj.day}
+                            className={`
+                                /* FIX: Increased min-height to make calendar bigger/more spacious */
+                                min-h-[5rem] w-full flex flex-col items-start justify-start p-2 rounded-lg relative transition-all duration-150 border
+                                ${!dayObj.day ? 'border-transparent cursor-default' : 'border-slate-600 hover:shadow-md hover:border-slate-500'}
+                                ${dayObj.isToday 
+                                    ? 'bg-indigo-600 text-white font-bold border-indigo-700 shadow-lg' 
+                                    : ''}
+                                ${isRegisteredDay && !dayObj.isToday
+                                    ? 'bg-emerald-900/40 text-emerald-400 font-medium border-emerald-700' 
+                                    : ''}
+                                ${isOpenDay && !dayObj.isToday
+                                    ? 'bg-amber-900/40 text-amber-400 font-medium border-amber-700' 
+                                    : ''}
+                                ${dayObj.day && !dayObj.isToday && dayObj.eventType === 'none' 
+                                    ? 'bg-slate-700 text-white hover:bg-slate-600' : ''}
+                                ${!dayObj.day ? 'text-gray-400' : ''}
+                            `}
+                        >
+                            <span className="text-sm">{dayObj.day}</span>
+                            
+                            {dayObj.eventType !== 'none' && (
+                                <div className="mt-auto flex gap-1 pt-2">
+                                     {dayObj.eventType === 'registered' && <div className="w-2 h-2 rounded-full bg-emerald-400"></div>}
+                                     {dayObj.eventType === 'open' && <div className="w-2 h-2 rounded-full bg-amber-400"></div>}
+                                </div>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+
+            <CalendarLegend />
+        </div>
+    );
+};
