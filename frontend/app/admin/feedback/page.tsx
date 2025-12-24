@@ -409,7 +409,7 @@ export default function FeedbackDashboardPage() {
                           {event.title}
                         </TableCell>
                         <TableCell className="text-slate-400">
-                          {new Date(event.start_date).toLocaleDateString()}
+                          {new Date(event.start_date).toLocaleDateString("en-GB")}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="secondary" className="bg-slate-700 text-white">
@@ -502,7 +502,7 @@ export default function FeedbackDashboardPage() {
                             <p className="line-clamp-2">{fb.comment || "-"}</p>
                           </TableCell>
                           <TableCell className="text-slate-400 text-sm">
-                            {new Date(fb.created_at).toLocaleDateString()}
+                            {new Date(fb.created_at).toLocaleDateString("en-GB")}
                           </TableCell>
                         </TableRow>
                       ))
