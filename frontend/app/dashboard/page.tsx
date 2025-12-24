@@ -426,7 +426,7 @@ export default function DashboardPage() {
                               <TableCell className="text-sm text-slate-300">{u.email}</TableCell>
                               <TableCell className="text-white">{u.membership_number}</TableCell>
                               <TableCell className="text-slate-300">
-                                {new Date(u.createdAt).toLocaleDateString()}
+                                {new Date(u.createdAt).toLocaleDateString("en-GB")}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Button

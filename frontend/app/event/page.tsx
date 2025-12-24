@@ -252,7 +252,7 @@ export default function EventsPage() {
 
                     <div className="flex items-center justify-between gap-4 mb-4">
                       <div className="text-sm text-slate-400">
-                        {event.start_date ? new Date(event.start_date).toLocaleDateString() : "TBA"}
+                        {event.start_date ? new Date(event.start_date).toLocaleDateString("en-GB") : "TBA"}
                       </div>
 
                       <div>

@@ -455,7 +455,7 @@ export default function AttendancePage() {
 
                           <div className="flex items-center gap-2 text-sm text-slate-400">
                             <Calendar size={14} />
-                            <span>{new Date(event.start_date).toLocaleDateString()}</span>
+                            <span>{new Date(event.start_date).toLocaleDateString("en-GB")}</span>
                             {event.start_time && (
                               <>
                                 <Clock size={14} className="ml-2" />
