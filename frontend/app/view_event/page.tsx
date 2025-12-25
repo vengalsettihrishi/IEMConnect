@@ -21,7 +21,6 @@ import {
   getAttendanceList,
   checkInToEvent,
 } from "@/lib/attendance-api";
-import { downloadCertificate } from "@/lib/certificate-api";
 import { useToast } from "@/hooks/use-toast";
 import { sendEventAnnouncement } from "@/lib/notification-api";
 import NotificationBell from "@/components/NotificationBell";
@@ -80,8 +79,6 @@ import {
   QrCode,
   Trash2,
   Award,
-  Download,
-  Loader2,
   ChevronRight, // Ensure ChevronRight is imported for SidebarButton
 } from "lucide-react";
 
@@ -168,9 +165,6 @@ export default function ViewEventPage() {
     type: "success" | "error";
     text: string;
   } | null>(null);
-
-  // Certificate download state
-  const [downloadingCertificate, setDownloadingCertificate] = useState(false);
 
   // Check if user is admin
   const isAdmin = user?.role === "admin";
@@ -695,29 +689,9 @@ export default function ViewEventPage() {
     }
   };
 
-  // Handle certificate download
-  const handleDownloadCertificate = async () => {
-    if (!eventId) return;
-    
-    setDownloadingCertificate(true);
-    try {
-      await downloadCertificate(eventId);
-      toast({
-        title: "Certificate Downloaded",
-        description: "Your certificate has been downloaded successfully.",
-      });
-    } catch (err: any) {
-      toast({
-        title: "Download Failed",
-        description: err.message || "Failed to download certificate",
-        variant: "destructive",
-      });
-    } finally {
-      setDownloadingCertificate(false);
-    }
-  };
+  if (!user) return null;
 
-  // Simple status badge styling (must be before any early returns to satisfy hooks rules)
+  // Simple status badge styling
   const statusConfig = useMemo(() => {
     const base =
       "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border";
@@ -746,8 +720,6 @@ export default function ViewEventPage() {
         };
     }
   }, [event]);
-
-  if (!user) return null;
 
   return (
     // APPLY DARK BACKGROUND: bg-slate-900
@@ -1142,42 +1114,11 @@ export default function ViewEventPage() {
                                 Certificates Available
                               </span>
                             </div>
-                            <p className="text-sm text-slate-100 mb-3">
+                            <p className="text-sm text-slate-100">
                               This event has been completed. Registration and
                               check-in are closed, but participants can still
                               download their certificates.
                             </p>
-                            
-                            {/* Certificate Download Button */}
-                            {event.is_registered && (event as any).registration_status === "attended" && (
-                              <Button
-                                onClick={handleDownloadCertificate}
-                                disabled={downloadingCertificate}
-                                className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                              >
-                                {downloadingCertificate ? (
-                                  <>
-                                    <Loader2 size={16} className="animate-spin" />
-                                    Downloading...
-                                  </>
-                                ) : (
-                                  <>
-                                    <Download size={16} />
-                                    Download Certificate
-                                  </>
-                                )}
-                              </Button>
-                            )}
-                            {event.is_registered && (event as any).registration_status !== "attended" && (
-                              <p className="text-sm text-amber-300">
-                                ⚠️ You were registered but did not check in. Certificates are only available for participants who attended.
-                              </p>
-                            )}
-                            {!event.is_registered && (
-                              <p className="text-sm text-slate-400">
-                                You were not registered for this event.
-                              </p>
-                            )}
                           </div>
                         </div>
                       </CardContent>
